@@ -1,0 +1,10 @@
+<?php include $phireHeader; ?>
+    <h1 class="media-header"><?=$title; ?></h1>
+    <nav id="sub-nav">
+<?php if ($acl->isAllowed($user->role, 'media-libraries', 'add')): ?>
+        <nav><a href="<?=$phireUri . '/media/libraries/add'; ?>">+ Add</a></nav>
+<?php endif; ?>
+        <nav><a href="<?=$phireUri . '/media/libraries'; ?>">Back</a></nav>
+    </nav>
+<?=$form; ?>
+<?php include $phireFooter; ?>

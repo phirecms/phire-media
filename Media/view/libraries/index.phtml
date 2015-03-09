@@ -1,0 +1,46 @@
+<?php include $phireHeader; ?>
+    <h1 class="media-header"><?=$title; ?></h1>
+<?php if (count($libraries) > 0): ?>
+<?php if (null !== $pages): ?>
+    <div class="page-links"><?=$pages; ?></div>
+<?php endif; ?>
+    <nav id="sub-nav">
+<?php if ($acl->isAllowed($user->role, 'media-libraries', 'add')): ?>
+        <nav><a href="<?=$phireUri . '/media/libraries/add'; ?>">+ Add</a></nav>
+<?php endif; ?>
+        <nav><a href="<?=$phireUri . '/modules'; ?>">Back</a></nav>
+    </nav>
+<?php if ($acl->isAllowed($user->role, 'media-libraries', 'remove')): ?>
+    <form id="media-libraries-form" action="<?=$phireUri . '/media/libraries/remove'; ?>" method="post">
+<?php endif; ?>
+        <table class="data-table" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <th><a href="<?=$phireUri . '/media/libraries?sort=id';?>">#</a></th>
+                <th><a href="<?=$phireUri . '/media/libraries?sort=name';?>">Name</a></th>
+                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'media-libraries', 'edit')): ?>Edit<?php else: ?>&nbsp;<?php endif; ?></th>
+                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'media-libraries', 'remove')): ?><input type="checkbox" name="checkall" id="checkall" value="rm_groups" /><?php else: ?>&nbsp;<?php endif; ?></th>
+            </tr>
+<?php $i = 1; ?>
+<?php foreach ($libraries as $library): ?>
+            <tr>
+                <td><?=$library->id; ?></td>
+                <td><?=$library->name; ?></td>
+                <td><?php if ($acl->isAllowed($user->role, 'media-libraries', 'edit')): ?><a class="edit-link" href="<?=$phireUri . '/media/libraries/edit/' . $library->id; ?>">Edit</a><?php else: ?>&nbsp;<?php endif; ?></td>
+                <td class="text-center"><?php if ($acl->isAllowed($user->role, 'media-libraries', 'remove')): ?><input type="checkbox" name="rm_groups[]" id="rm_groups<?=$i++; ?>" value="<?=$library->id; ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
+            </tr>
+<?php endforeach; ?>
+        </table>
+<?php if ($acl->isAllowed($user->role, 'media-libraries', 'remove')): ?>
+        <div id="form-footer"><input type="submit" name="submit" class="process-btn" value="Remove" /></div>
+    </form>
+<?php endif; ?>
+<?php else: ?>
+    <nav id="sub-nav">
+<?php if ($acl->isAllowed($user->role, 'media-libraries', 'add')): ?>
+        <nav><a href="<?=$phireUri . '/media/libraries/add'; ?>">+ Add</a></nav>
+<?php endif; ?>
+        <nav><a href="<?=$phireUri . '/modules'; ?>">Back</a></nav>
+    </nav>
+    <p>There are currently no media libraries.</p>
+<?php endif; ?>
+<?php include $phireFooter; ?>

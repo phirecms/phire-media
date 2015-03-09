@@ -27,11 +27,21 @@ return [
         ],
         'nav.module' => [
             'name' => 'Media Libraries',
-            'href' => '/media/library',
+            'href' => '/media/libraries',
             'acl'  => [
-                'resource'   => 'media-library',
+                'resource'   => 'media-libraries',
                 'permission' => 'index'
             ]
         ],
+        'models' => [
+            'Media\Model\Media' => []
+        ],
+        'events' => [
+            [
+                'name'     => 'app.route.pre',
+                'action'   => 'Media\Model\Media::addModels',
+                'priority' => 1000
+            ]
+        ]
     ]
 ];

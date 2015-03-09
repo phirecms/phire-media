@@ -7,7 +7,7 @@ return [
         'edit',
         'remove'
     ],
-    'media-library' => [
+    'media-libraries' => [
         'index',
         'add',
         'edit',

@@ -2,7 +2,7 @@
 
 return [
     APP_URI => [
-        '/media[/]' => [
+        '/media[/:lid]' => [
             'controller' => 'Media\Controller\IndexController',
             'action'     => 'index',
             'acl'        => [
@@ -34,35 +34,35 @@ return [
                 'permission' => 'remove'
             ]
         ],
-        '/media/library[/]' => [
+        '/media/libraries[/]' => [
             'controller' => 'Media\Controller\LibraryController',
             'action'     => 'index',
             'acl'        => [
-                'resource'   => 'media-library',
+                'resource'   => 'media-libraries',
                 'permission' => 'index'
             ]
         ],
-        '/media/library/add' => [
+        '/media/libraries/add' => [
             'controller' => 'Media\Controller\LibraryController',
             'action'     => 'add',
             'acl'        => [
-                'resource'   => 'media-library',
+                'resource'   => 'media-libraries',
                 'permission' => 'add'
             ]
         ],
-        '/media/library/edit/:id' => [
+        '/media/libraries/edit/:id' => [
             'controller' => 'Media\Controller\LibraryController',
             'action'     => 'edit',
             'acl'        => [
-                'resource'   => 'media-library',
+                'resource'   => 'media-libraries',
                 'permission' => 'edit'
             ]
         ],
-        '/media/library/remove' => [
+        '/media/libraries/remove' => [
             'controller' => 'Media\Controller\LibraryController',
             'action'     => 'remove',
             'acl'        => [
-                'resource'   => 'media-library',
+                'resource'   => 'media-libraries',
                 'permission' => 'remove'
             ]
         ]
