@@ -58,6 +58,14 @@ return [
                 'permission' => 'edit'
             ]
         ],
+        '/media/libraries/json/:id' => [
+            'controller' => 'Media\Controller\LibraryController',
+            'action'     => 'json',
+            'acl'        => [
+                'resource'   => 'media-libraries',
+                'permission' => 'json'
+            ]
+        ],
         '/media/libraries/remove' => [
             'controller' => 'Media\Controller\LibraryController',
             'action'     => 'remove',

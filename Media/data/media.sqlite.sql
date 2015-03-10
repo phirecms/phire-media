@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS "[{prefix}]media_libraries" (
   "name" varchar NOT NULL,
   "folder" varchar NOT NULL,
   "allowed_types" text,
+  "disallowed_types" text,
   "max_filesize" integer,
   "actions" text,
   "adapter" varchar,

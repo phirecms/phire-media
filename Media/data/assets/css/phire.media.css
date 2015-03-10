@@ -70,13 +70,16 @@
     font-size: 0.825em;
     border-radius: 4px;
     display: block;
+    height: 16px;
 }
 
 #media-library-form-field-group-3 > dd > select {
     margin: 0 0 5px 0;
     padding: 1px 3px 1px 3px;
     border-radius: 4px;
+    font-size: 0.825em;
     display: block;
+    height: 26px;
 }
 
 #media-limits {
@@ -90,14 +93,15 @@
     padding: 0 5px 0 5px;
 }
 
-#allowed-types-span {
+.allowed-types-span {
     margin: 0;
-    padding: 0 0 0 10px;
+    padding: 0;
     font-size: 0.825em;
+    float: right;
 }
 
-#allowed-types-span > a, #allowed-types-span > a:hover {
-    padding: 0 5px 0 5px;
+.allowed-types-span > a, .allowed-types-span > a:hover {
+    padding: 0 2px 0 2px;
     font-weight: normal;
 }
 

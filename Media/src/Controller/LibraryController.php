@@ -129,6 +129,41 @@ class LibraryController extends AbstractController
     }
 
     /**
+     * JSON action method
+     *
+     * @param  int $id
+     * @return void
+     */
+    public function json($id)
+    {
+        $json = [];
+
+        $library = Table\MediaLibraries::findById($id);
+        if (isset($library->id)) {
+            if (null !== $library->actions) {
+                $actions = unserialize($library->actions);
+                $keys    = array_keys($actions);
+                $values  = array_values($actions);
+                if ((count($keys) > 1) && (count($values) > 1)) {
+                    for ($i = 1; $i < count($keys); $i++) {
+                        if (isset($keys[$i]) && isset($values[$i])) {
+                            $json[] = [
+                                'name'    => $keys[$i],
+                                'method'  => $values[$i]['method'],
+                                'params'  => $values[$i]['params'],
+                                'quality' => $values[$i]['quality']
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        $this->response->setBody(json_encode($json, JSON_PRETTY_PRINT));
+        $this->send(200, ['Content-Type' => 'application/json']);
+    }
+
+    /**
      * Remove action method
      *
      * @return void
