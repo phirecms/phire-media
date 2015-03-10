@@ -49,7 +49,19 @@ class LibraryController extends AbstractController
         $this->prepareView('libraries/add.phtml');
         $this->view->title = 'Media Libraries : Add';
 
-        $this->view->form = new Form\MediaLibrary($this->application->config()['forms']['Media\Form\MediaLibrary']);
+        $fields = $this->application->config()['forms']['Media\Form\MediaLibrary'];
+
+        if (\Pop\Image\Gd::isInstalled()) {
+            $fields[0]['adapter']['value']['Gd'] = 'Gd';
+        }
+        if (\Pop\Image\Imagick::isInstalled()) {
+            $fields[0]['adapter']['value']['Imagick'] = 'Imagick';
+        }
+        if (\Pop\Image\Gmagick::isInstalled()) {
+            $fields[0]['adapter']['value']['Gmagick'] = 'Gmagick';
+        }
+
+        $this->view->form = new Form\MediaLibrary($fields);
 
         if ($this->request->isPost()) {
             $this->view->form->addFilter('htmlentities', [ENT_QUOTES, 'UTF-8'])
@@ -83,7 +95,19 @@ class LibraryController extends AbstractController
         $this->prepareView('libraries/edit.phtml');
         $this->view->title = 'Media Libraries : ' . $library->title;
 
-        $this->view->form = new Form\MediaLibrary($this->application->config()['forms']['Media\Form\MediaLibrary']);
+        $fields = $this->application->config()['forms']['Media\Form\MediaLibrary'];
+
+        if (\Pop\Image\Gd::isInstalled()) {
+            $fields[0]['adapter']['value']['Gd'] = 'Gd';
+        }
+        if (\Pop\Image\Imagick::isInstalled()) {
+            $fields[0]['adapter']['value']['Imagick'] = 'Imagick';
+        }
+        if (\Pop\Image\Gmagick::isInstalled()) {
+            $fields[0]['adapter']['value']['Gmagick'] = 'Gmagick';
+        }
+
+        $this->view->form = new Form\MediaLibrary($fields);
         $this->view->form->addFilter('htmlentities', [ENT_QUOTES, 'UTF-8'])
              ->setFieldValues($library->toArray());
 

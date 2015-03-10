@@ -48,6 +48,7 @@ return [
             ],
             'adapter' => [
                 'type'  => 'select',
+                'label' => 'Image Adapter',
                 'value' => [
                     '----' => '----'
                 ]
@@ -68,36 +69,45 @@ return [
                 'type'       => 'text',
                 'label'      => 'Name',
                 'required'   => true,
-                'attributes' => ['size' => 60]
+                'attributes' => [
+                    'size'    => 60,
+                    'style'   => 'width: 99.5%',
+                    'onkeyup' => "phire.createSlug(this.value, '#folder');"
+                ]
             ],
             'folder' => [
                 'type'       => 'text',
                 'label'      => 'Folder',
                 'required'   => true,
-                'attributes' => ['size' => 60]
+                'attributes' => [
+                    'size'  => 60,
+                    'style' => 'width: 99.5%'
+                ]
             ],
             'allowed_types' => [
                 'type'  => 'checkbox',
-                'label' => 'Allowed Types',
+                'label' => 'Allowed Types <span id="allowed-types-span">[<a href="#" onclick="phire.checkAllAllowedTypes(); return false;">Check All</a> | <a href="#" onclick="phire.uncheckAllAllowedTypes(); return false;">Uncheck All</a> | <a href="#" onclick="phire.invertAllowedTypes(); return false;">Inverse</a>]<br /><em>(Uncheck all to allow any type.)</em></span>',
                 'value' => [
                     'ai'   => 'ai',   'aif'  => 'aif',  'aiff'  => 'aiff',  'avi'   => 'avi',   'bmp' => 'bmp', 'bz2'  => 'bz2',
                     'css'  => 'css',  'csv'  => 'csv',  'doc'   => 'doc',   'docx'  => 'docx',  'eps' => 'eps', 'fla'  => 'fla',
                     'flv'  => 'flv',  'gif'  => 'gif',  'gz'    => 'gz',    'html'  => 'html',  'htm' => 'htm', 'jpe'  => 'jpe',
                     'jpg'  => 'jpg',  'jpeg' => 'jpeg', 'js'    => 'js',    'json'  => 'json',  'mov' => 'mov', 'mp2'  => 'mp2',
                     'mp3'  => 'mp3',  'mp4'  => 'mp4',  'mpg'   => 'mpg',   'mpeg'  => 'mpeg',  'otf' => 'otf', 'pdf'  => 'pdf',
-                    'phar' => 'phar', 'php'  => 'php',  'php3'  => 'php3',  'phtml' => 'phtml', 'png' => 'png', 'ppt'  => 'ppt',
-                    'pptx' => 'pptx', 'psd'  => 'psd',  'rar'   => 'rar',   'sql'   => 'sql',   'svg' => 'svg', 'swf'  => 'swf',
-                    'tar'  => 'tar',  'tbz'  => 'tbz',  'tbz2'  => 'tbz2',  'tgz'   => 'tgz',   'tif' => 'tif', 'tiff' => 'tiff',
-                    'tsv'  => 'tsv',  'ttf'  => 'ttf',  'txt'   => 'txt',   'wav'   => 'wav',   'wma' => 'wma', 'wmv'  => 'wmv',
-                    'xls'  => 'xls',  'xlsx' => 'xlsx', 'xhtml' => 'xhtml', 'xml'   => 'xml',   'yml' => 'yml', 'zip'  => 'zip'
+                    'phar' => 'phar', 'php'  => 'php',  'phtml' => 'phtml', 'png' => 'png', 'ppt'  => 'ppt', 'pptx' => 'pptx',
+                    'psd'  => 'psd',  'rar'   => 'rar',   'sql'   => 'sql',   'svg' => 'svg', 'swf'  => 'swf', 'tar'  => 'tar',
+                    'tbz'  => 'tbz',  'tbz2'  => 'tbz2',  'tgz'   => 'tgz',   'tif' => 'tif', 'tiff' => 'tiff', 'tsv'  => 'tsv',
+                    'ttf'  => 'ttf',  'txt'   => 'txt',   'wav'   => 'wav',   'wma' => 'wma', 'wmv'  => 'wmv', 'xls'  => 'xls',
+                    'xlsx' => 'xlsx', 'xml'   => 'xml',   'yml' => 'yml', 'zip'  => 'zip'
                 ]
-            ],
+            ]
+        ],
+        [
             'action_name_1' => [
                 'type'       => 'text',
-                'label'      => '<a href="#">[+]</a> Actions',
+                'label'      => '<a href="#" onclick="return phire.addMediaActions();">[+]</a> Actions',
                 'attributes' => [
                     'placeholder' => 'Name',
-                    'size'        => 10
+                    'size'        => 20
                 ]
             ],
             'action_method_1' => [
@@ -116,7 +126,7 @@ return [
                 'type'       => 'text',
                 'attributes' => [
                     'placeholder' => 'Parameters',
-                    'size'        => 15
+                    'size'        => 20
                 ]
             ],
             'action_quality_1' => [
