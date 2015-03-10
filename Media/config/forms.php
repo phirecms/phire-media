@@ -44,11 +44,9 @@ return [
             'adapter' => [
                 'type'     => 'select',
                 'label'    => 'Image Adapter',
-                'required' => true,
                 'value'    => [
-                    '----' => '----'
-                ],
-                'validators' => new \Pop\Validator\NotEqual('----', 'You must select an adapter.')
+                    '----' => '[ None ]'
+                ]
             ],
             'max_filesize' => [
                 'type'       => 'text',

@@ -36,7 +36,7 @@ class MediaLibrary extends Form
     {
         parent::setFieldValues($values);
 
-        if (($_POST) && (null !== $this->name)) {
+        if (($_POST) && (null !== $this->name) && (null !== $this->folder)) {
             // Check for dupe name
             $library = Table\MediaLibraries::findBy(['name' => $this->name]);
             if (isset($library->id) && ($this->id != $library->id)) {
@@ -47,7 +47,12 @@ class MediaLibrary extends Form
             $library = Table\MediaLibraries::findBy(['folder' => $this->folder]);
             if (isset($library->id) && ($this->id != $library->id)) {
                 $this->getElement('folder')
-                     ->addValidator(new Validator\NotEqual($this->folder, 'That name already exists.'));
+                     ->addValidator(new Validator\NotEqual($this->folder, 'That folder already exists.'));
+            }
+
+            if (file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $this->folder)) {
+                $this->getElement('folder')
+                     ->addValidator(new Validator\NotEqual($this->folder, 'That folder already exists on disk.'));
             }
         }
     }

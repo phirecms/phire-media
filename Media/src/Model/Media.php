@@ -130,6 +130,8 @@ class Media extends AbstractModel
      */
     public static function addModels(\Phire\Application $application)
     {
+        $resources = $application->config()['resources'];
+        $params    = $application->services()->getParams('nav.phire');
         $config    = $application->module('Media');
         $libraries = \Media\Table\MediaLibraries::findAll();
         foreach ($libraries->rows() as $library) {
@@ -139,10 +141,30 @@ class Media extends AbstractModel
                     'type_value' => $library->id,
                     'type_name'  => $library->name
                 ];
+
+                $resources['media-library-' . $library->id] = [
+                    'index', 'add', 'edit', 'remove'
+                ];
+
+                if (!isset($params['tree']['media']['children'])) {
+                    $params['tree']['media']['children'] = [];
+                }
+
+                $params['tree']['media']['children']['media-library-' . $library->id] = [
+                        'name' => $library->name,
+                        'href' => '/media/' . $library->id,
+                        'acl'  => [
+                            'resource'   => 'media-library-' . $library->id,
+                            'permission' => 'index'
+                        ]
+                ];
             }
         }
 
+        $application->mergeConfig(['resources' => $resources]);
+        $application->services()->setParams('nav.phire', $params);
         $application->mergeModuleConfig('Media', $config);
+
     }
 
 }
