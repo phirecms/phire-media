@@ -93,7 +93,7 @@ class LibraryController extends AbstractController
         $library->getById($id);
 
         $this->prepareView('libraries/edit.phtml');
-        $this->view->title = 'Media Libraries : ' . $library->title;
+        $this->view->title = 'Media Libraries : ' . $library->name;
 
         $fields = $this->application->config()['forms']['Media\Form\MediaLibrary'];
 

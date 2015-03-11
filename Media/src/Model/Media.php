@@ -142,7 +142,7 @@ class Media extends AbstractModel
                     'type_name'  => $library->name
                 ];
 
-                $resources['media-library-' . $library->id] = [
+                $resources['media-library-' . $library->id . '|media-library-' . str_replace(' ', '-', strtolower($library->name))] = [
                     'index', 'add', 'edit', 'remove'
                 ];
 
