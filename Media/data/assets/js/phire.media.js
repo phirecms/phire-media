@@ -86,7 +86,7 @@ jax(document).ready(function(){
     if (jax('#media-library-form')[0] != undefined) {
         if ((jax.cookie.load('phire') != '') && (jax('#id').val() != null)) {
             var phireCookie = jax.cookie.load('phire');
-            var json = jax.get(phireCookie.app_uri + '/media/libraries/json/' + jax('#id').val());
+            var json = jax.get(phireCookie.base_path + phireCookie.app_uri + '/media/libraries/json/' + jax('#id').val());
             if (json.length > 0) {
                 phire.addMediaActions(json);
             }
