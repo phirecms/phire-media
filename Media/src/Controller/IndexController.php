@@ -56,10 +56,11 @@ class IndexController extends AbstractController
                 $pages = null;
             }
 
-            $this->view->title = 'Media : ' . $library->name;
-            $this->view->pages = $pages;
-            $this->view->lid   = $lid;
-            $this->view->media = $media->getAll(
+            $this->view->title  = 'Media : ' . $library->name;
+            $this->view->pages  = $pages;
+            $this->view->lid    = $lid;
+            $this->view->folder = $library->folder;
+            $this->view->media  = $media->getAll(
                 $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
             );
         }
@@ -189,11 +190,13 @@ class IndexController extends AbstractController
         $values = $media->toArray();
         $fields[1]['file']['label'] = 'Replace File?';
         unset($fields[1]['file']['required']);
-        $fields[1]['current_file'] = [
-            'type'  => 'hidden',
-            'value' => $values['file'],
-            'label' => 'View <a href="' . BASE_PATH . CONTENT_PATH . '/' . $library->folder . '/' . $values['file'] . '" target="_blank">' . $values['file'] . '</a>?'
-        ];
+
+        $viewLink = '<a href="' . BASE_PATH . CONTENT_PATH . '/' . $library->folder . '/' . $media->file .
+            '" target="_blank"><img src="' . $media->icon . '" height="50" /></a>';
+
+        $fields[1]['current_file']['value'] = $values['file'];
+        $fields[1]['current_file']['label'] = $viewLink . '<br /><a href="' . BASE_PATH . CONTENT_PATH . '/' . $library->folder .
+            '/' . $values['file'] . '" target="_blank">' . $values['file'] . '</a>';
 
         unset($values['file']);
 

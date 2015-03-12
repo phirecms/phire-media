@@ -25,16 +25,25 @@ class Media extends AbstractModel
             $page = ((null !== $page) && ((int)$page > 1)) ?
                 ($page * $limit) - $limit : null;
 
-            return Table\Media::findBy(['library_id' => $this->lid], null, [
+            $rows = Table\Media::findBy(['library_id' => $this->lid], null, [
                 'offset' => $page,
                 'limit'  => $limit,
                 'order'  => $order
             ])->rows();
         } else {
-            return Table\Media::findBy(['library_id' => $this->lid], null, [
+            $rows = Table\Media::findBy(['library_id' => $this->lid], null, [
                 'order'  => $order
             ])->rows();
         }
+
+        $library = new MediaLibrary();
+        $library->getById($this->lid);
+
+        foreach ($rows as $key => $value) {
+            $value->icon = $this->getFileIcon($value->file, $library);
+        }
+
+        return $rows;
     }
 
     /**
@@ -47,7 +56,14 @@ class Media extends AbstractModel
     {
         $media = Table\Media::findById($id);
         if (isset($media->id)) {
-            $this->data = array_merge($this->data, $media->getColumns());
+            $data = $media->getColumns();
+
+            $library = new MediaLibrary();
+            $library->getById($data['library_id']);
+
+            $data['icon'] = $this->getFileIcon($data['file'], $library);
+
+            $this->data = array_merge($this->data, $data);
         }
     }
 
@@ -78,6 +94,15 @@ class Media extends AbstractModel
             'file'       => $fileName
         ]);
         $media->save();
+
+        if (null !== $library->adapter) {
+            $class     = 'Pop\Image\\' .  $library->adapter;
+            $formats   = array_keys($class::getFormats());
+            $fileParts = pathinfo($fileName);
+            if (!empty($fileParts['extension']) && in_array($fileParts['extension'], $formats)) {
+                $this->processImage($fileName, $library);
+            }
+        }
 
         $this->data = array_merge($this->data, $media->getColumns());
     }
@@ -155,6 +180,12 @@ class Media extends AbstractModel
                     if (file_exists($folder . DIRECTORY_SEPARATOR . $media->file)) {
                         unlink($folder . DIRECTORY_SEPARATOR . $media->file);
                     }
+
+                    foreach ($library->actions as $size => $action) {
+                        if (file_exists($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $media->file)) {
+                            unlink($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $media->file);
+                        }
+                    }
                     $media->delete();
                 }
             }
@@ -180,6 +211,85 @@ class Media extends AbstractModel
     public function getCount()
     {
         return Table\Media::findAll()->count();
+    }
+
+    /**
+     * Process image file
+     *
+     * @param  string       $fileName
+     * @param  MediaLibrary $library
+     * @return void
+     */
+    public function processImage($fileName, $library)
+    {
+        $class  = 'Pop\Image\\' . $library->adapter;
+        $folder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
+        foreach ($library->actions as $size => $action) {
+            $sizeFolder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
+                $library->folder . DIRECTORY_SEPARATOR . $size;
+
+            if (file_exists($sizeFolder)) {
+                $image = new $class($folder . DIRECTORY_SEPARATOR . $fileName);
+                $image = call_user_func_array([$image, $action['method']], explode(',', $action['params']));
+                $image->setQuality($action['quality']);
+                $image->save($sizeFolder . DIRECTORY_SEPARATOR . $fileName);
+            }
+        }
+    }
+
+    /**
+     * Get file icon
+     *
+     * @param  string       $fileName
+     * @param  MediaLibrary $library
+     * @return string
+     */
+    public function getFileIcon($fileName, $library)
+    {
+        $icon      = null;
+        $thumbSize = null;
+        $folder    = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
+
+        // Check for the smallest image thumb nail
+        foreach ($library->actions as $size => $action) {
+            if (file_exists($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $fileName)) {
+                $fileSize = filesize($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $fileName);
+                if ((null === $thumbSize) || ($fileSize < $thumbSize)) {
+                    $thumbSize = $fileSize;
+                    $icon      = BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder .
+                        DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $fileName;
+                }
+            }
+        }
+
+        if (null === $icon) {
+            $iconFolder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/';
+            $fileParts  = pathinfo($fileName);
+            $ext        = $fileParts['extension'];
+            if (!empty($ext)) {
+                if (($ext == 'docx') || ($ext == 'pptx') || ($ext == 'xlsx')) {
+                    $ext = substr($ext, 0, 3);
+                }
+
+                if (file_exists($iconFolder . $ext . '.png')) {
+                    $icon = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/' . $ext . '.png';
+                } else if (($ext == 'wav') || ($ext == 'aif') || ($ext == 'aiff') ||
+                    ($ext == 'mp3') || ($ext == 'mp2') || ($ext == 'flac') ||
+                    ($ext == 'wma') || ($ext == 'aac') || ($ext == 'swa')) {
+                    $icon = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/aud.png';
+                } else if (($ext == '3gp') || ($ext == 'asf') || ($ext == 'avi') ||
+                    ($ext == 'mpg') || ($ext == 'm4v') || ($ext == 'mov') ||
+                    ($ext == 'mpeg') || ($ext == 'wmv')) {
+                    $icon = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/vid.png';
+                } else if (($ext == 'bmp') || ($ext == 'ico') || ($ext == 'tiff') || ($ext == 'tif')) {
+                    $icon = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/img.png';
+                } else {
+                    $icon = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/file.png';
+                }
+            }
+        }
+
+        return $icon;
     }
 
     /**

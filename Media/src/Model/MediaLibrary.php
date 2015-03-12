@@ -60,6 +60,7 @@ class MediaLibrary extends AbstractModel
                     $data['action_params_1']  = $values[0]['params'];
                     $data['action_quality_1'] = $values[0]['quality'];
                 }
+                $data['actions'] = $actions;
             }
 
             $this->data = array_merge($this->data, $data);

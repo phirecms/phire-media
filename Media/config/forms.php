@@ -36,6 +36,10 @@ return [
                     'size'  => 60,
                     'style' => 'width: 100%'
                 ]
+            ],
+            'current_file' => [
+                'type'  => 'hidden',
+                'value' => null
             ]
         ]
     ],
