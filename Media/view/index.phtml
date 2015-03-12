@@ -1,30 +1,20 @@
 <?php include $phireHeader; ?>
     <h1 class="media-header"><?=$title; ?></h1>
-<?php if (isset($libraries) && (count($libraries) > 0)): ?>
+<?php if (count($media) > 0): ?>
 <?php if (null !== $pages): ?>
     <div class="page-links"><?=$pages; ?></div>
 <?php endif; ?>
-    <table class="data-table" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-            <th>Media Libraries</th>
-        </tr>
-<?php foreach ($libraries as $library): ?>
-        <tr>
-            <td><a href="<?=$phireUri . '/media/' . $library->id; ?>"><?=$library->name; ?></a></td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
-<?php elseif (isset($media) && (count($media) > 0)): ?>
-<?php if (null !== $pages): ?>
-    <div class="page-links"><?=$pages; ?></div>
-<?php endif; ?>
-<?php if ($acl->isAllowed($user->role, 'media', 'add')): ?>
     <nav id="sub-nav">
-        <nav><a href="<?=$phireUri . '/media/add'; ?>">+ Add</a></nav>
-    </nav>
+<?php if ($acl->isAllowed($user->role, 'media', 'add')): ?>
+        <nav><a href="<?=$phireUri . '/media/add/' . $lid; ?>">+ Add</a></nav>
 <?php endif; ?>
+<?php if ($acl->isAllowed($user->role, 'media', 'batch')): ?>
+        <nav><a href="<?=$phireUri . '/media/batch/' . $lid; ?>">Batch</a></nav>
+<?php endif; ?>
+        <nav><a href="<?=$phireUri . '/media'; ?>">Back</a></nav>
+    </nav>
 <?php if ($acl->isAllowed($user->role, 'media', 'remove')): ?>
-    <form id="medias-form" action="<?=$phireUri . '/media/remove'; ?>" method="post">
+    <form id="medias-form" action="<?=$phireUri . '/media/remove/' . $lid; ?>" method="post">
 <?php endif; ?>
         <table class="data-table" cellpadding="0" cellspacing="0" border="0">
             <tr>
@@ -38,7 +28,7 @@
             <tr>
                 <td><?=$m->id; ?></td>
                 <td><?=$m->title; ?></td>
-                <td><?php if ($acl->isAllowed($user->role, 'media', 'edit')): ?><a class="edit-link" href="<?=$phireUri . '/media/edit/' . $m->id; ?>">Edit</a><?php else: ?>&nbsp;<?php endif; ?></td>
+                <td><?php if ($acl->isAllowed($user->role, 'media', 'edit')): ?><a class="edit-link" href="<?=$phireUri . '/media/edit/' . $lid . '/' . $m->id; ?>">Edit</a><?php else: ?>&nbsp;<?php endif; ?></td>
                 <td class="text-center"><?php if ($acl->isAllowed($user->role, 'media', 'remove')): ?><input type="checkbox" name="rm_media[]" id="rm_media<?=$i++; ?>" value="<?=$m->id; ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
             </tr>
 <?php endforeach; ?>
@@ -48,6 +38,15 @@
     </form>
 <?php endif; ?>
 <?php else: ?>
-    <p>There are currently no media or media libraries.</p>
+    <nav id="sub-nav">
+<?php if ($acl->isAllowed($user->role, 'media', 'add')): ?>
+        <nav><a href="<?=$phireUri . '/media/add/' . $lid; ?>">+ Add</a></nav>
+<?php endif; ?>
+<?php if ($acl->isAllowed($user->role, 'media', 'batch')): ?>
+        <nav><a href="<?=$phireUri . '/media/batch/' . $lid; ?>">Batch</a></nav>
+<?php endif; ?>
+        <nav><a href="<?=$phireUri . '/media'; ?>">Back</a></nav>
+    </nav>
+    <p>There are currently no media in this library.</p>
 <?php endif; ?>
 <?php include $phireFooter; ?>

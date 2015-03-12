@@ -48,13 +48,15 @@ class MediaLibrary extends Form
             if (isset($library->id) && ($this->id != $library->id)) {
                 $this->getElement('folder')
                      ->addValidator(new Validator\NotEqual($this->folder, 'That folder already exists.'));
-            }
 
-            if (file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $this->folder)) {
-                $this->getElement('folder')
-                     ->addValidator(new Validator\NotEqual($this->folder, 'That folder already exists on disk.'));
+                if (file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $this->folder)) {
+                    $this->getElement('folder')
+                         ->addValidator(new Validator\NotEqual($this->folder, 'That folder already exists on disk.'));
+                }
             }
         }
+
+        return $this;
     }
 
 }

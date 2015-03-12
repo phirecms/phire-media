@@ -10,7 +10,7 @@ return [
                 'permission' => 'index'
             ]
         ],
-        '/media/add' => [
+        '/media/add/:lid' => [
             'controller' => 'Media\Controller\IndexController',
             'action'     => 'add',
             'acl'        => [
@@ -18,7 +18,15 @@ return [
                 'permission' => 'add'
             ]
         ],
-        '/media/edit/:id' => [
+        '/media/batch/:lid' => [
+            'controller' => 'Media\Controller\IndexController',
+            'action'     => 'batch',
+            'acl'        => [
+                'resource'   => 'media',
+                'permission' => 'batch'
+            ]
+        ],
+        '/media/edit/:lid/:id' => [
             'controller' => 'Media\Controller\IndexController',
             'action'     => 'edit',
             'acl'        => [
@@ -26,7 +34,7 @@ return [
                 'permission' => 'edit'
             ]
         ],
-        '/media/remove' => [
+        '/media/remove/:lid' => [
             'controller' => 'Media\Controller\IndexController',
             'action'     => 'remove',
             'acl'        => [

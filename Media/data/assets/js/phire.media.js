@@ -3,6 +3,7 @@
  */
 
 phire.mediaActionCount = 1;
+phire.batchCount = 1;
 
 phire.addMediaActions = function(vals) {
     if (vals == null) {
@@ -45,6 +46,22 @@ phire.addMediaActions = function(vals) {
             "id"    : 'action_quality_' + phire.mediaActionCount,
             "value" : vals[i].quality
         }).appendTo(jax('#action_quality_1').parent());
+    }
+
+    return false;
+};
+
+phire.addBatchFile = function(max) {
+    if (phire.batchCount < max) {
+        phire.batchCount++;
+
+        // Add batch file field
+        jax('#file_1').clone({
+            "name": 'file_' + phire.batchCount,
+            "id": 'file_' + phire.batchCount
+        }).appendTo(jax('#file_1').parent());
+    } else {
+        alert('The max number of files that can be uploaded at once is ' + max + '.');
     }
 
     return false;

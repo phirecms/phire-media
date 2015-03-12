@@ -19,9 +19,8 @@ class IndexController extends AbstractController
      */
     public function index($lid = null)
     {
-        $this->prepareView('index.phtml');
-
         if (null === $lid) {
+            $this->prepareView('libraries.phtml');
             $library = new Model\MediaLibrary();
 
             if ($library->hasPages($this->config->pagination)) {
@@ -39,9 +38,14 @@ class IndexController extends AbstractController
                 $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
             );
         } else {
+            $this->prepareView('index.phtml');
             $media   = new Model\Media(['lid' => $lid]);
             $library = new Model\MediaLibrary();
             $library->getById($lid);
+
+            if (!isset($library->id)) {
+                $this->redirect(BASE_PATH . APP_URI . '/media');
+            }
 
             if ($media->hasPages($this->config->pagination)) {
                 $limit = $this->config->pagination;
@@ -54,6 +58,7 @@ class IndexController extends AbstractController
 
             $this->view->title = 'Media : ' . $library->name;
             $this->view->pages = $pages;
+            $this->view->lid   = $lid;
             $this->view->media = $media->getAll(
                 $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
             );
@@ -65,27 +70,85 @@ class IndexController extends AbstractController
     /**
      * Add action method
      *
+     * @param  int $lid
      * @return void
      */
-    public function add()
+    public function add($lid)
     {
-        $this->prepareView('add.phtml');
-        $this->view->title = 'Media : Add';
+        $library = new Model\MediaLibrary();
+        $library->getById($lid);
 
-        $this->view->form = new Form\Media($this->application->config()['forms']['Media\Form\Media']);
+        if (!isset($library->id)) {
+            $this->redirect(BASE_PATH . APP_URI . '/media');
+        }
+
+        $this->prepareView('add.phtml');
+        $this->view->title = 'Media : ' . $library->name . ' : Add';
+        $this->view->lid   = $lid;
+        $this->view->max   = $library->getMaxFilesize();
+
+        $fields = $this->application->config()['forms']['Media\Form\Media'];
+        $fields[0]['library_id']['value'] = $lid;
+        $this->view->form = new Form\Media($fields);
 
         if ($this->request->isPost()) {
+            $settings = $library->getSettings();
+            $values = (!empty($_FILES['file']) && !empty($_FILES['file']['name'])) ?
+                array_merge($this->request->getPost(), ['file' => $_FILES['file']['name']]) :
+                $this->request->getPost();
+
             $this->view->form->addFilter('htmlentities', [ENT_QUOTES, 'UTF-8'])
-                 ->setFieldValues($this->request->getPost());
+                 ->setFieldValues($values, $settings);
 
             if ($this->view->form->isValid()) {
                 $this->view->form->clearFilters()
                      ->addFilter('html_entity_decode', [ENT_QUOTES, 'UTF-8'])
                      ->filter();
                 $media = new Model\Media();
-                $media->save($this->view->form->getFields());
+                $media->save($_FILES['file'], $this->view->form->getFields());
                 $this->view->id = $media->id;
-                $this->redirect(BASE_PATH . APP_URI . '/media/edit/' . $media->id . '?saved=' . time());
+                $this->redirect(BASE_PATH . APP_URI . '/media/edit/' . $lid . '/'. $media->id . '?saved=' . time());
+            }
+        }
+
+        $this->send();
+    }
+
+    /**
+     * batch action method
+     *
+     * @param  int $lid
+     * @return void
+     */
+    public function batch($lid)
+    {
+        $library = new Model\MediaLibrary();
+        $library->getById($lid);
+
+        if (!isset($library->id)) {
+            $this->redirect(BASE_PATH . APP_URI . '/media');
+        }
+
+        $this->prepareView('batch.phtml');
+        $this->view->title = 'Media : ' . $library->name . ' : Batch Upload';
+        $this->view->lid   = $lid;
+        $this->view->max   = $library->getMaxFilesize();
+
+        $fields = $this->application->config()['forms']['Media\Form\Batch'];
+        $fields[0]['library_id']['value'] = $lid;
+        $this->view->form = new Form\Batch($fields);
+
+        if ($this->request->isPost()) {
+            $this->view->form->addFilter('htmlentities', [ENT_QUOTES, 'UTF-8'])
+                ->setFieldValues($this->request->getPost(), $library->getSettings());
+
+            if ($this->view->form->isValid()) {
+                $this->view->form->clearFilters()
+                    ->addFilter('html_entity_decode', [ENT_QUOTES, 'UTF-8'])
+                    ->filter();
+                $media = new Model\Media();
+                $media->batch($this->view->form->getFields());
+                $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid . '?saved=' . time());
             }
         }
 
@@ -95,32 +158,65 @@ class IndexController extends AbstractController
     /**
      * Edit action method
      *
+     * @param  int $lid
      * @param  int $id
      * @return void
      */
-    public function edit($id)
+    public function edit($lid, $id)
     {
+        $library = new Model\MediaLibrary();
+        $library->getById($lid);
+
+        if (!isset($library->id)) {
+            $this->redirect(BASE_PATH . APP_URI . '/media');
+        }
+
         $media = new Model\Media();
         $media->getById($id);
 
+        if (!isset($media->id)) {
+            $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid);
+        }
+
         $this->prepareView('edit.phtml');
         $this->view->title = 'Media : ' . $media->title;
+        $this->view->lid   = $lid;
+        $this->view->max   = $library->getMaxFilesize();
 
-        $this->view->form = new Form\Media($this->application->config()['forms']['Media\Form\Media']);
+        $fields = $this->application->config()['forms']['Media\Form\Media'];
+        $fields[0]['library_id']['value'] = $lid;
+
+        $values = $media->toArray();
+        $fields[1]['file']['label'] = 'Replace File?';
+        unset($fields[1]['file']['required']);
+        $fields[1]['current_file'] = [
+            'type'  => 'hidden',
+            'value' => $values['file'],
+            'label' => 'View <a href="' . BASE_PATH . CONTENT_PATH . '/' . $library->folder . '/' . $values['file'] . '" target="_blank">' . $values['file'] . '</a>?'
+        ];
+
+        unset($values['file']);
+
+        $this->view->form = new Form\Media($fields);
         $this->view->form->addFilter('htmlentities', [ENT_QUOTES, 'UTF-8'])
-             ->setFieldValues($media->toArray());
+             ->setFieldValues($values);
 
         if ($this->request->isPost()) {
-            $this->view->form->setFieldValues($this->request->getPost());
+            $settings = $library->getSettings();
+            $values   = (!empty($_FILES['file']) && !empty($_FILES['file']['name'])) ?
+                array_merge($this->request->getPost(), ['file' => $_FILES['file']['name']]) :
+                $this->request->getPost();
+
+            $this->view->form->setFieldValues($values, $settings);
 
             if ($this->view->form->isValid()) {
                 $this->view->form->clearFilters()
                      ->addFilter('html_entity_decode', [ENT_QUOTES, 'UTF-8'])
                      ->filter();
                 $media = new Model\Media();
-                $media->update($this->view->form->getFields());
+                $media->update((!empty($_FILES['file']) ? $_FILES['file'] : null), $this->view->form->getFields());
                 $this->view->id = $media->id;
-                $this->redirect(BASE_PATH . APP_URI . '/media/edit/' . $media->id . '?saved=' . time());
+                $this->redirect(BASE_PATH . APP_URI . '/media/edit/' . $lid . '/'. $media->id . '?saved=' . time());
             }
         }
 
@@ -130,15 +226,16 @@ class IndexController extends AbstractController
     /**
      * Remove action method
      *
+     * @param  int $lid
      * @return void
      */
-    public function remove()
+    public function remove($lid)
     {
         if ($this->request->isPost()) {
             $media = new Model\Media();
             $media->remove($this->request->getPost());
         }
-        $this->redirect(BASE_PATH . APP_URI . '/media?removed=' . time());
+        $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid .  '?removed=' . time());
     }
 
     /**

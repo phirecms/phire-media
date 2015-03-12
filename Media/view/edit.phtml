@@ -1,10 +1,16 @@
 <?php include $phireHeader; ?>
     <h1 class="media-header"><?=$title; ?></h1>
+    <div id="media-limits">
+        [<span><strong>PHP Limits:</strong></span> <span>Post Max: <strong class="error"><?=ini_get('post_max_size'); ?></strong></span> | <span>Upload Max: <strong class="error"><?=$max; ?></strong></span> | <span>Max Uploads: <strong class="error"><?=ini_get('max_file_uploads'); ?></strong></span>]
+    </div>
     <nav id="sub-nav">
-<?php if ($acl->isAllowed($user->role, 'fields', 'add')): ?>
-        <nav><a href="<?=$phireUri . '/fields/add'; ?>">+ Add</a></nav>
+<?php if ($acl->isAllowed($user->role, 'media', 'add')): ?>
+        <nav><a href="<?=$phireUri . '/media/add/' . $lid; ?>">+ Add</a></nav>
 <?php endif; ?>
-        <nav><a href="<?=$phireUri . '/fields'; ?>">Back</a></nav>
+<?php if ($acl->isAllowed($user->role, 'media', 'batch')): ?>
+        <nav><a href="<?=$phireUri . '/media/batch/' . $lid; ?>">Batch</a></nav>
+<?php endif; ?>
+        <nav><a href="<?=$phireUri . '/media/' . $lid; ?>">Back</a></nav>
     </nav>
 <?=$form; ?>
 <?php include $phireFooter; ?>

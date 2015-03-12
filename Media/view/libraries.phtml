@@ -1,0 +1,20 @@
+<?php include $phireHeader; ?>
+    <h1 class="media-header"><?=$title; ?></h1>
+<?php if (count($libraries) > 0): ?>
+<?php if (null !== $pages): ?>
+    <div class="page-links"><?=$pages; ?></div>
+<?php endif; ?>
+    <table class="data-table" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <th>Media Libraries</th>
+        </tr>
+<?php foreach ($libraries as $library): ?>
+        <tr>
+            <td><a href="<?=$phireUri . '/media/' . $library->id; ?>"><?=$library->name; ?></a></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+<?php else: ?>
+    <p>There are currently no media libraries.</p>
+<?php endif; ?>
+<?php include $phireFooter; ?>

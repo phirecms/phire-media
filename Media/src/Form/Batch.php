@@ -6,7 +6,7 @@ use Pop\File\Upload;
 use Pop\Form\Form;
 use Pop\Validator;
 
-class Media extends Form
+class Batch extends Form
 {
 
     /**
@@ -17,12 +17,12 @@ class Media extends Form
      * @param  array  $fields
      * @param  string $action
      * @param  string $method
-     * @return Media
+     * @return Batch
      */
     public function __construct(array $fields, $action = null, $method = 'post')
     {
         parent::__construct($fields, $action, $method);
-        $this->setAttribute('id', 'media-form');
+        $this->setAttribute('id', 'media-batch-form');
         $this->setIndent('    ');
     }
 
@@ -31,22 +31,11 @@ class Media extends Form
      *
      * @param  array $values
      * @param  array $settings
-     * @return Media
+     * @return Batch
      */
     public function setFieldValues(array $values = null, array $settings = [])
     {
         parent::setFieldValues($values);
-
-        if (($_POST) && ($_FILES) && (count($settings) == 4)) {
-            $upload = new Upload(
-                $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
-            );
-            if (!$upload->test($_FILES['file'])) {
-                $this->getElement('file')
-                     ->addValidator(new Validator\NotEqual($this->file, $upload->getErrorMessage()));
-            }
-        }
-
         return $this;
     }
 

@@ -19,7 +19,7 @@ class MediaLibrary extends AbstractModel
      */
     public function getAll($limit = null, $page = null, $sort = null)
     {
-        $order = $this->getSortOrder($sort, $page);
+        $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : 'order ASC';
 
         if (null !== $limit) {
             $page = ((null !== $page) && ((int)$page > 1)) ?
@@ -169,12 +169,45 @@ class MediaLibrary extends AbstractModel
     }
 
     /**
+     * Get library settings
+     *
+     * @return array
+     */
+    public function getSettings()
+    {
+        return [
+            'folder'           => $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $this->folder,
+            'allowed_types'    => (!empty($this->allowed_types) ? explode(',', $this->allowed_types) : []),
+            'disallowed_types' => (!empty($this->disallowed_types) ? explode(',', $this->disallowed_types) : []),
+            'max_filesize'     => $this->parseMaxFilesize($this->max_filesize)
+        ];
+    }
+
+    /**
+     * Get max filesize between library max filesize and PHP's max upload size
+     *
+     * @return string
+     */
+    public function getMaxFilesize()
+    {
+        if (!isset($this->max_filesize)) {
+            return ini_get('upload_max_filesize');
+        } else {
+            $sysMax = $this->parseMaxFilesize($this->max_filesize);
+            $phpMax = $this->parseMaxFilesize(ini_get('upload_max_filesize'));
+            return ($sysMax <= $phpMax) ?
+                $this->unparseMaxFilesize($sysMax) :
+                $this->unparseMaxFilesize($phpMax);
+        }
+    }
+
+    /**
      * Parse max filesize
      *
      * @param  string $size
      * @return int
      */
-    protected function parseMaxFilesize($size)
+    public function parseMaxFilesize($size)
     {
         $size = strtolower($size);
 
@@ -193,12 +226,12 @@ class MediaLibrary extends AbstractModel
      * @param  int $size
      * @return string
      */
-    protected function unparseMaxFilesize($size)
+    public function unparseMaxFilesize($size)
     {
         if ($size >= 1000000) {
-            $size = floor($size / 1000000) . ' MB';
+            $size = floor($size / 1000000) . 'M';
         } else if ($size >= 1000) {
-            $size = floor($size / 1000) . ' KB';
+            $size = floor($size / 1000) . 'K';
         }
 
         return $size;

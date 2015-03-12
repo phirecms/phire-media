@@ -4,6 +4,7 @@ return [
     'media' => [
         'index',
         'add',
+        'batch',
         'edit',
         'remove'
     ],

@@ -23,12 +23,48 @@ return [
             'title' => [
                 'type'       => 'text',
                 'label'      => 'Title',
-                'attributes' => ['size' => 60]
+                'attributes' => [
+                    'size'  => 60,
+                    'style' => 'width: 99.5%'
+                ]
             ],
             'file' => [
                 'type'       => 'file',
                 'label'      => 'File',
-                'attributes' => ['size' => 60]
+                'required'   => true,
+                'attributes' => [
+                    'size'  => 60,
+                    'style' => 'width: 100%'
+                ]
+            ]
+        ]
+    ],
+    'Media\Form\Batch' => [
+        [
+            'submit' => [
+                'type'       => 'submit',
+                'value'      => 'Save',
+                'attributes' => [
+                    'class'  => 'save-btn wide'
+                ]
+            ],
+            'library_id' => [
+                'type'  => 'hidden',
+                'value' => 0
+            ],
+            'id' => [
+                'type'  => 'hidden',
+                'value' => 0
+            ]
+        ],
+        [
+            'file_1' => [
+                'type'       => 'file',
+                'label'      => '<a href="#" onclick="return phire.addBatchFile(' . ini_get('max_file_uploads') . ');">[+]</a> Files',
+                'attributes' => [
+                    'size'  => 60,
+                    'style' => 'width: 100%; margin: 0 0 8px 0;'
+                ]
             ]
         ]
     ],
@@ -106,7 +142,7 @@ return [
         [
             'action_name_1' => [
                 'type'       => 'text',
-                'label'      => '<a href="#" onclick="return phire.addMediaActions();">[+]</a> Actions',
+                'label'      => '<a href="#" onclick="return phire.addMediaActions();">[+]</a> Image Sizes &amp; Actions',
                 'attributes' => [
                     'placeholder' => 'Name',
                     'size'        => 20
