@@ -31,11 +31,26 @@ class Batch extends Form
      *
      * @param  array $values
      * @param  array $settings
-     * @return Batch
+     * @return Media
      */
     public function setFieldValues(array $values = null, array $settings = [])
     {
         parent::setFieldValues($values);
+
+        if (($_POST) && ($_FILES) && (count($settings) == 4)) {
+            $upload = new Upload(
+                $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
+            );
+            foreach ($_FILES as $file) {
+                if (!empty($file['name'])) {
+                    if (!$upload->test($file)) {
+                        $this->getElement('error')
+                             ->addValidator(new Validator\NotEqual('1', $upload->getErrorMessage() . ' (' . $file['name'] . ')'));
+                    }
+                }
+            }
+        }
+
         return $this;
     }
 

@@ -94,7 +94,7 @@ class IndexController extends AbstractController
 
         if ($this->request->isPost()) {
             $settings = $library->getSettings();
-            $values = (!empty($_FILES['file']) && !empty($_FILES['file']['name'])) ?
+            $values   = (!empty($_FILES['file']) && !empty($_FILES['file']['name'])) ?
                 array_merge($this->request->getPost(), ['file' => $_FILES['file']['name']]) :
                 $this->request->getPost();
 
@@ -140,15 +140,20 @@ class IndexController extends AbstractController
         $this->view->form = new Form\Batch($fields);
 
         if ($this->request->isPost()) {
+            $settings = $library->getSettings();
+            $values   = (!empty($_FILES['file_1']) && !empty($_FILES['file_1']['name'])) ?
+                array_merge($this->request->getPost(), ['file_1' => $_FILES['file_1']['name']]) :
+                $this->request->getPost();
+
             $this->view->form->addFilter('htmlentities', [ENT_QUOTES, 'UTF-8'])
-                ->setFieldValues($this->request->getPost(), $library->getSettings());
+                 ->setFieldValues($values, $settings);
 
             if ($this->view->form->isValid()) {
                 $this->view->form->clearFilters()
-                    ->addFilter('html_entity_decode', [ENT_QUOTES, 'UTF-8'])
-                    ->filter();
+                     ->addFilter('html_entity_decode', [ENT_QUOTES, 'UTF-8'])
+                     ->filter();
                 $media = new Model\Media();
-                $media->batch($this->view->form->getFields());
+                $media->batch($_FILES, $this->view->form->getFields());
                 $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid . '?saved=' . time());
             }
         }

@@ -69,6 +69,10 @@ return [
                     'size'  => 60,
                     'style' => 'width: 100%; margin: 0 0 8px 0;'
                 ]
+            ],
+            'error' => [
+                'type'  => 'hidden',
+                'value' => 1
             ]
         ]
     ],

@@ -110,13 +110,14 @@ class Media extends AbstractModel
     /**
      * Save batch media
      *
+     * @param  array $files
      * @param  array $fields
      * @return void
      */
-    public function batch(array $fields)
+    public function batch(array $files, array $fields)
     {
-        if (($_FILES) && ($_POST)) {
-            foreach ($_FILES as $file) {
+        foreach ($files as $file) {
+            if (!empty($file['name'])) {
                 $this->save($file, $fields);
             }
         }
@@ -138,7 +139,8 @@ class Media extends AbstractModel
                 $library->getById($fields['library_id']);
 
                 $folder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
-                if (file_exists($folder . DIRECTORY_SEPARATOR . $fields['current_file'])) {
+                if (file_exists($folder . DIRECTORY_SEPARATOR . $fields['current_file']) &&
+                    !is_dir($folder . DIRECTORY_SEPARATOR . $fields['current_file'])) {
                     unlink($folder . DIRECTORY_SEPARATOR . $fields['current_file']);
                 }
                 $fileName = (new Upload($folder))->upload($file);
@@ -177,12 +179,14 @@ class Media extends AbstractModel
                     $library->getById($media->library_id);
 
                     $folder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
-                    if (file_exists($folder . DIRECTORY_SEPARATOR . $media->file)) {
+                    if (file_exists($folder . DIRECTORY_SEPARATOR . $media->file) &&
+                        !is_dir($folder . DIRECTORY_SEPARATOR . $media->file)) {
                         unlink($folder . DIRECTORY_SEPARATOR . $media->file);
                     }
 
                     foreach ($library->actions as $size => $action) {
-                        if (file_exists($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $media->file)) {
+                        if (file_exists($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $media->file) &&
+                            !is_dir($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $media->file)) {
                             unlink($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $media->file);
                         }
                     }
