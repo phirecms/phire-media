@@ -40,7 +40,11 @@ class Media extends AbstractModel
         $library->getById($this->lid);
 
         foreach ($rows as $key => $value) {
-            $value->icon = $this->getFileIcon($value->file, $library);
+            $icon = $this->getFileIcon($value->file, $library);
+
+            $value->icon        = $icon['image'];
+            $value->icon_width  = $icon['width'];
+            $value->icon_height = $icon['height'];
         }
 
         return $rows;
@@ -61,8 +65,12 @@ class Media extends AbstractModel
             $library = new MediaLibrary();
             $library->getById($data['library_id']);
 
+            $icon = $this->getFileIcon($data['file'], $library);
+
             $data['library_folder'] = $library->folder;
-            $data['icon'] = $this->getFileIcon($data['file'], $library);
+            $data['icon']           = $icon['image'];
+            $data['icon_width']     = $icon['width'];
+            $data['icon_height']    = $icon['height'];
 
             $this->data = array_merge($this->data, $data);
         }
@@ -83,8 +91,12 @@ class Media extends AbstractModel
             $library = new MediaLibrary();
             $library->getById($data['library_id']);
 
+            $icon = $this->getFileIcon($data['file'], $library);
+
             $data['library_folder'] = $library->folder;
-            $data['icon'] = $this->getFileIcon($data['file'], $library);
+            $data['icon']           = $icon['image'];
+            $data['icon_width']     = $icon['width'];
+            $data['icon_height']    = $icon['height'];
 
             $this->data = array_merge($this->data, $data);
         }
@@ -157,16 +169,25 @@ class Media extends AbstractModel
     {
         $media = Table\Media::findById($fields['id']);
         if (isset($media->id)) {
-            if ((null !== $file) && !empty($file['name'])) {
-                $library = new MediaLibrary();
-                $library->getById($fields['library_id']);
+            $library = new MediaLibrary();
+            $library->getById($fields['library_id']);
 
+            if ((null !== $file) && !empty($file['name'])) {
                 $folder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
                 if (file_exists($folder . DIRECTORY_SEPARATOR . $fields['current_file']) &&
                     !is_dir($folder . DIRECTORY_SEPARATOR . $fields['current_file'])) {
                     unlink($folder . DIRECTORY_SEPARATOR . $fields['current_file']);
                 }
                 $fileName = (new Upload($folder))->upload($file);
+
+                if (null !== $library->adapter) {
+                    $class     = 'Pop\Image\\' .  $library->adapter;
+                    $formats   = array_keys($class::getFormats());
+                    $fileParts = pathinfo($fileName);
+                    if (!empty($fileParts['extension']) && in_array($fileParts['extension'], $formats)) {
+                        $this->processImage($fileName, $library);
+                    }
+                }
             } else {
                 $fileName = $fields['current_file'];
             }
@@ -181,6 +202,10 @@ class Media extends AbstractModel
             $media->title      = $title;
             $media->file       = $fileName;
             $media->save();
+
+            if (isset($fields['reprocess']) && isset($fields['reprocess'][0])) {
+                $this->processImage($fileName, $library);
+            }
 
             $this->data = array_merge($this->data, $media->getColumns());
         }
@@ -269,27 +294,31 @@ class Media extends AbstractModel
      *
      * @param  string       $fileName
      * @param  MediaLibrary $library
-     * @return string
+     * @return array
      */
     public function getFileIcon($fileName, $library)
     {
-        $icon      = null;
         $thumbSize = null;
         $folder    = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
+        $icon      = [
+            'image'  => null,
+            'width'  => null,
+            'height' => null
+        ];
 
         // Check for the smallest image thumb nail
         foreach ($library->actions as $size => $action) {
             if (file_exists($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $fileName)) {
                 $fileSize = filesize($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $fileName);
                 if ((null === $thumbSize) || ($fileSize < $thumbSize)) {
-                    $thumbSize = $fileSize;
-                    $icon      = BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder .
+                    $thumbSize     = $fileSize;
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder .
                         DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $fileName;
                 }
             }
         }
 
-        if (null === $icon) {
+        if (null === $icon['image']) {
             $iconFolder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/';
             $fileParts  = pathinfo($fileName);
             $ext        = $fileParts['extension'];
@@ -299,21 +328,27 @@ class Media extends AbstractModel
                 }
 
                 if (file_exists($iconFolder . $ext . '.png')) {
-                    $icon = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/' . $ext . '.png';
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/' . $ext . '.png';
                 } else if (($ext == 'wav') || ($ext == 'aif') || ($ext == 'aiff') ||
                     ($ext == 'mp3') || ($ext == 'mp2') || ($ext == 'flac') ||
                     ($ext == 'wma') || ($ext == 'aac') || ($ext == 'swa')) {
-                    $icon = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/aud.png';
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/aud.png';
                 } else if (($ext == '3gp') || ($ext == 'asf') || ($ext == 'avi') ||
                     ($ext == 'mpg') || ($ext == 'm4v') || ($ext == 'mov') ||
                     ($ext == 'mpeg') || ($ext == 'wmv')) {
-                    $icon = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/vid.png';
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/vid.png';
                 } else if (($ext == 'bmp') || ($ext == 'ico') || ($ext == 'tiff') || ($ext == 'tif')) {
-                    $icon = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/img.png';
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/img.png';
                 } else {
-                    $icon = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/file.png';
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/file.png';
                 }
             }
+        }
+
+        if ((null !== $icon['image']) && function_exists('getimagesize')) {
+            $size = getimagesize($_SERVER['DOCUMENT_ROOT'] . $icon['image']);
+            $icon['width']  = $size[0];
+            $icon['height'] = $size[1];
         }
 
         return $icon;

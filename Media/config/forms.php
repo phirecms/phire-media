@@ -10,6 +10,15 @@ return [
                     'class'  => 'save-btn wide'
                 ]
             ],
+            'current_file' => [
+                'type'  => 'hidden',
+                'value' => null
+            ],
+            'reprocess' => [
+                'type'  => 'hidden',
+                'value' => null
+
+            ],
             'library_id' => [
                 'type'  => 'hidden',
                 'value' => 0
@@ -36,10 +45,6 @@ return [
                     'size'  => 60,
                     'style' => 'width: 100%'
                 ]
-            ],
-            'current_file' => [
-                'type'  => 'hidden',
-                'value' => null
             ]
         ]
     ],

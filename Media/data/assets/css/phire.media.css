@@ -120,3 +120,30 @@
     background-position: left center;
     background-repeat: no-repeat;
 }
+
+.media-view-link {
+    margin: 0;
+    padding: 5px;
+    display: block;
+}
+
+.media-view-link > a {
+    margin: 0 auto;
+    padding: 0;
+    text-align: center;
+    font-weight: normal;
+    display: block;
+}
+
+.media-view-link > a > img {
+    margin: 0 auto;
+    padding: 3px;
+    display: block;
+    background-color: #ccc;
+    border: solid 1px #aaa;
+}
+.media-view-link > a > img:hover {
+    background-color: #c9f2fc;
+    border: solid 1px #82bfce;
+
+}

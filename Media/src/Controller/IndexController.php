@@ -191,17 +191,23 @@ class IndexController extends AbstractController
 
         $fields = $this->application->config()['forms']['Media\Form\Media'];
         $fields[0]['library_id']['value'] = $lid;
+        $fields[0]['reprocess']['type']   = 'checkbox';
+        $fields[0]['reprocess']['value']  = ['1' => 'Re-process?'];
 
         $values = $media->toArray();
         $fields[1]['file']['label'] = 'Replace File?';
         unset($fields[1]['file']['required']);
 
-        $viewLink = '<a href="' . BASE_PATH . CONTENT_PATH . '/' . $library->folder . '/' . $media->file .
-            '" target="_blank"><img src="' . $media->icon . '" height="50" /></a>';
+        $width = ((null !== $media->icon_width) && ($media->icon_width < 120)) ?
+            $media->icon_width : 120;
 
-        $fields[1]['current_file']['value'] = $values['file'];
-        $fields[1]['current_file']['label'] = $viewLink . '<br /><a href="' . BASE_PATH . CONTENT_PATH . '/' . $library->folder .
-            '/' . $values['file'] . '" target="_blank">' . $values['file'] . '</a>';
+        $viewLink = '<a href="' . BASE_PATH . CONTENT_PATH . '/' . $library->folder . '/' . $media->file .
+            '" target="_blank"><img src="' . $media->icon . '" width="' . $width . '" /></a>';
+
+        $fields[0]['current_file']['value'] = $values['file'];
+        $fields[0]['current_file']['label'] = '<span class="media-view-link">' . $viewLink . '<a href="' .
+            BASE_PATH . CONTENT_PATH . '/' . $library->folder . '/' . $values['file'] . '" target="_blank">' .
+            $values['file'] . '</a></span>';
 
         unset($values['file']);
 
