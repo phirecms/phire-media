@@ -164,17 +164,21 @@ class LibraryController extends AbstractController
     }
 
     /**
-     * Remove action method
+     * Process action method
      *
      * @return void
      */
-    public function remove()
+    public function process()
     {
         if ($this->request->isPost()) {
             $library = new Model\MediaLibrary();
-            $library->remove($this->request->getPost());
+            $library->process($this->request->getPost());
         }
-        $this->redirect(BASE_PATH . APP_URI . '/media/libraries?removed=' . time());
+        if (isset($_POST['process_media_libraries'])) {
+            $this->redirect(BASE_PATH . APP_URI . '/media?saved=' . time());
+        } else {
+            $this->redirect(BASE_PATH . APP_URI . '/media/libraries?removed=' . time());
+        }
     }
 
     /**

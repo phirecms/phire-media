@@ -6,12 +6,13 @@ return [
         'add',
         'batch',
         'edit',
-        'remove'
+        'remove',
+        'browser'
     ],
     'media-libraries' => [
         'index',
         'add',
         'edit',
-        'remove'
+        'process'
     ]
 ];

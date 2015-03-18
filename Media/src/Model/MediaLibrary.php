@@ -166,13 +166,34 @@ class MediaLibrary extends AbstractModel
      * @param  array $fields
      * @return void
      */
-    public function remove(array $fields)
+    public function process(array $fields)
     {
         if (isset($fields['rm_media_libraries'])) {
             foreach ($fields['rm_media_libraries'] as $id) {
                 $library = Table\MediaLibraries::findById((int)$id);
                 if (isset($library->id)) {
+                    $dir = new Dir($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/' . $library->folder);
+                    $dir->emptyDir(true);
                     $library->delete();
+                }
+            }
+        } else if (isset($fields['process_media_libraries'])) {
+            foreach ($fields['process_media_libraries'] as $id) {
+                $library = new self();
+                $library->getById((int)$id);
+                if (isset($library->id)) {
+                    $class   = 'Pop\Image\\' .  $library->adapter;
+                    $formats = array_keys($class::getFormats());
+                    $media   = Table\Media::findBy(['library_id' => $library->id]);
+                    if ($media->count() > 0) {
+                        $med = new Media();
+                        foreach ($media->rows() as $m) {
+                            $fileParts = pathinfo($m->file);
+                            if (!empty($fileParts['extension']) && in_array($fileParts['extension'], $formats)) {
+                                $med->processImage($m->file, $library);
+                            }
+                        }
+                    }
                 }
             }
         }

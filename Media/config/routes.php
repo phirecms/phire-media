@@ -42,6 +42,14 @@ return [
                 'permission' => 'remove'
             ]
         ],
+        '/media/browser[/:lid]' => [
+            'controller' => 'Media\Controller\IndexController',
+            'action'     => 'browser',
+            'acl'        => [
+                'resource'   => 'media',
+                'permission' => 'browser'
+            ]
+        ],
         '/media/libraries[/]' => [
             'controller' => 'Media\Controller\LibraryController',
             'action'     => 'index',
@@ -74,12 +82,12 @@ return [
                 'permission' => 'json'
             ]
         ],
-        '/media/libraries/remove' => [
+        '/media/libraries/process' => [
             'controller' => 'Media\Controller\LibraryController',
-            'action'     => 'remove',
+            'action'     => 'process',
             'acl'        => [
                 'resource'   => 'media-libraries',
-                'permission' => 'remove'
+                'permission' => 'process'
             ]
         ]
     ]

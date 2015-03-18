@@ -4,16 +4,26 @@
 <?php if (null !== $pages): ?>
     <div class="page-links"><?=$pages; ?></div>
 <?php endif; ?>
-    <table class="data-table" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-            <th>Media Libraries</th>
-        </tr>
+<?php if ($acl->isAllowed($user->role, 'media-libraries', 'process')): ?>
+    <form id="media-libraries-form" action="<?=$phireUri . '/media/libraries/process'; ?>" method="post">
+<?php endif; ?>
+        <table class="data-table" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <th>Media Libraries</th>
+                <th class="text-center"><?php if ($acl->isAllowed($user->role, 'media-libraries', 'process')): ?><input type="checkbox" name="checkall" id="checkall" value="process_media_libraries" /><?php else: ?>&nbsp;<?php endif; ?></th>
+            </tr>
+<?php $i = 1; ?>
 <?php foreach ($libraries as $library): ?>
-        <tr>
-            <td><a href="<?=$phireUri . '/media/' . $library->id; ?>"><?=$library->name; ?></a></td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
+            <tr>
+                <td><?php if ($acl->isAllowed($user->role, 'media-library-' . $library->id, 'index')): ?><a href="<?=$phireUri . '/media/' . $library->id; ?>"><?=$library->name; ?></a><?php else: echo $library->name; ?><?php endif; ?></td>
+                <td class="text-center"><?php if (($acl->isAllowed($user->role, 'media-libraries', 'process') && ($acl->isAllowed($user->role, 'media-library-' . $library->id, 'process')))): ?><input type="checkbox" name="process_media_libraries[]" id="process_media_libraries<?=$i++; ?>" value="<?=$library->id; ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
+            </tr>
+<?php endforeach; ?>
+        </table>
+<?php if ($acl->isAllowed($user->role, 'media-libraries', 'process')): ?>
+        <div id="form-footer"><input type="submit" name="submit" class="process-btn" value="Process" /></div>
+    </form>
+<?php endif; ?>
 <?php else: ?>
     <p>There are currently no media libraries.</p>
 <?php endif; ?>

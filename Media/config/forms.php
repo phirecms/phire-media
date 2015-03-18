@@ -79,6 +79,16 @@ return [
                 'type'  => 'hidden',
                 'value' => 1
             ]
+        ],
+        [
+            'batch_archive' =>  [
+                'type'       => 'file',
+                'label'      => 'Batch Archive File',
+                'attributes' => [
+                    'size'  => 60,
+                    'style' => 'width: 100%; margin: 0 0 8px 0;'
+                ]
+            ]
         ]
     ],
     'Media\Form\MediaLibrary' => [

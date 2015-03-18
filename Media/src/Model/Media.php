@@ -4,6 +4,8 @@ namespace Media\Model;
 
 use Media\Table;
 use Phire\Model\AbstractModel;
+use Pop\Archive\Archive;
+use Pop\File\Dir;
 use Pop\File\Upload;
 
 class Media extends AbstractModel
@@ -151,9 +153,13 @@ class Media extends AbstractModel
      */
     public function batch(array $files, array $fields)
     {
-        foreach ($files as $file) {
-            if (!empty($file['name'])) {
-                $this->save($file, $fields);
+        foreach ($files as $key => $file) {
+            if (($key == 'batch_archive') && !empty($file['name']))  {
+                $this->processBatch($file, $fields);
+            } else {
+                if (!empty($file['name'])) {
+                    $this->save($file, $fields);
+                }
             }
         }
     }
@@ -352,6 +358,72 @@ class Media extends AbstractModel
         }
 
         return $icon;
+    }
+
+    /**
+     * Process batch archive file
+     *
+     * @param  string $file
+     * @param  array  $fields
+     * @return void
+     */
+    public function processBatch($file, array $fields)
+    {
+        $tmp = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp';
+
+        mkdir($tmp);
+        chmod($tmp, 0777);
+
+        $batchFileName = (new Upload($tmp))->upload($file);
+        $archive       = new Archive($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $batchFileName);
+        $archive->extract($tmp);
+
+        if (($archive->getFilename() != $batchFileName) && file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $archive->getFilename())) {
+            unlink($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $archive->getFilename());
+        }
+
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $batchFileName)) {
+            unlink($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $batchFileName);
+        }
+
+        $library = new MediaLibrary();
+        $library->getById($fields['library_id']);
+        $settings = $library->getSettings();
+
+        $dir    = new Dir($tmp, true, true, false);
+        $upload = new Upload(
+            $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
+        );
+        foreach ($dir->getFiles() as $file) {
+            $basename = basename($file);
+            $testFile = [
+                'name' => $basename,
+                'size' => filesize($file),
+                'error' => 0
+            ];
+            if ($upload->test($testFile)) {
+                $fileName = $upload->checkFilename($basename);
+                copy($file, $settings['folder'] . '/' . $fileName);
+                $title = ucwords(str_replace(['_', '-'], [' ', ' '], substr($fileName, 0, strrpos($fileName, '.'))));
+                $media = new Table\Media([
+                    'library_id' => $fields['library_id'],
+                    'title' => $title,
+                    'file' => $fileName
+                ]);
+                $media->save();
+
+                if (null !== $library->adapter) {
+                    $class = 'Pop\Image\\' . $library->adapter;
+                    $formats = array_keys($class::getFormats());
+                    $fileParts = pathinfo($fileName);
+                    if (!empty($fileParts['extension']) && in_array($fileParts['extension'], $formats)) {
+                        $this->processImage($fileName, $library);
+                    }
+                }
+            }
+        }
+
+        $dir->emptyDir(true);
     }
 
     /**

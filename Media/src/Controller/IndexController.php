@@ -47,22 +47,26 @@ class IndexController extends AbstractController
                 $this->redirect(BASE_PATH . APP_URI . '/media');
             }
 
-            if ($media->hasPages($this->config->pagination)) {
-                $limit = $this->config->pagination;
-                $pages = new Paginator($media->getCount(), $limit);
-                $pages->useInput(true);
-            } else {
-                $limit = null;
-                $pages = null;
-            }
+            if ($this->services['acl']->isAllowed($this->sess->user->role, 'media-library-' . $library->id, 'index')) {
+                if ($media->hasPages($this->config->pagination)) {
+                    $limit = $this->config->pagination;
+                    $pages = new Paginator($media->getCount(), $limit);
+                    $pages->useInput(true);
+                } else {
+                    $limit = null;
+                    $pages = null;
+                }
 
-            $this->view->title  = 'Media : ' . $library->name;
-            $this->view->pages  = $pages;
-            $this->view->lid    = $lid;
-            $this->view->folder = $library->folder;
-            $this->view->media  = $media->getAll(
-                $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
-            );
+                $this->view->title = 'Media : ' . $library->name;
+                $this->view->pages = $pages;
+                $this->view->lid = $lid;
+                $this->view->folder = $library->folder;
+                $this->view->media = $media->getAll(
+                    $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
+                );
+            } else {
+                $this->redirect(BASE_PATH . APP_URI . '/media');
+            }
         }
 
         $this->send();
@@ -137,6 +141,13 @@ class IndexController extends AbstractController
 
         $fields = $this->application->config()['forms']['Media\Form\Batch'];
         $fields[0]['library_id']['value'] = $lid;
+
+        $fields[2]['batch_archive']['label']      = 'Batch Archive File <span class="batch-formats">(' . implode(', ', array_keys(\Pop\Archive\Archive::getFormats())) .')</span>';
+        $fields[2]['batch_archive']['validators'] = new \Pop\Validator\RegEx(
+            '/^.*\.(' . implode('|', array_keys(\Pop\Archive\Archive::getFormats())) . ')$/i',
+            'That file archive type is not allowed.'
+        );
+
         $this->view->form = new Form\Batch($fields);
 
         if ($this->request->isPost()) {
@@ -201,13 +212,12 @@ class IndexController extends AbstractController
         $width = ((null !== $media->icon_width) && ($media->icon_width < 120)) ?
             $media->icon_width : 120;
 
-        $viewLink = '<a href="' . BASE_PATH . CONTENT_PATH . '/' . $library->folder . '/' . $media->file .
-            '" target="_blank"><img src="' . $media->icon . '" width="' . $width . '" /></a>';
+        $fileName = (strlen($values['file']) > 20) ? substr($values['file'], 0, 20) . '...' : $values['file'];
 
         $fields[0]['current_file']['value'] = $values['file'];
-        $fields[0]['current_file']['label'] = '<span class="media-view-link">' . $viewLink . '<a href="' .
-            BASE_PATH . CONTENT_PATH . '/' . $library->folder . '/' . $values['file'] . '" target="_blank">' .
-            $values['file'] . '</a></span>';
+        $fields[0]['current_file']['label'] = '<span class="media-view-link"><a title="' . $values['file'] . '" href="' .
+            BASE_PATH . CONTENT_PATH . '/' . $library->folder . '/' . $media->file .
+            '" target="_blank"><img src="' . $media->icon . '" width="' . $width . '" />' . $fileName . '</a></span>';
 
         unset($values['file']);
 
@@ -250,6 +260,67 @@ class IndexController extends AbstractController
             $media->remove($this->request->getPost());
         }
         $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid .  '?removed=' . time());
+    }
+
+    /**
+     * Browser action method
+     *
+     * @param  int $lid
+     * @return void
+     */
+    public function browser($lid = null)
+    {
+        if ((null !== $this->request->getQuery('editor')) && (null !== $this->request->getQuery('type'))) {
+            $this->prepareView('browser.phtml');
+            $this->view->title = 'Media Browser';
+
+            $library = new Model\MediaLibrary();
+            if (null !== $lid) {
+                $media   = new Model\Media(['lid' => $lid]);
+                $library->getById($lid);
+
+                if ($this->services['acl']->isAllowed($this->sess->user->role, 'media-library-' . $library->id, 'index')) {
+                    if ($media->hasPages($this->config->pagination)) {
+                        $limit = $this->config->pagination;
+                        $pages = new Paginator($media->getCount(), $limit);
+                        $pages->useInput(true);
+                    } else {
+                        $limit = null;
+                        $pages = null;
+                    }
+
+                    $this->view->title = 'Media : ' . $library->name;
+                    $this->view->pages = $pages;
+                    $this->view->lid = $lid;
+                    $this->view->folder = $library->folder;
+                    $this->view->sizes = (null !== $library->actions) ? array_keys($library->actions) : [];
+                    $this->view->media = $media->getAll(
+                        $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
+                    );
+                } else {
+                    $this->redirect(BASE_PATH . APP_URI . '/media/browser?' . http_build_query($_GET));
+                }
+            } else {
+                $library = new Model\MediaLibrary();
+
+                if ($library->hasPages($this->config->pagination)) {
+                    $limit = $this->config->pagination;
+                    $pages = new Paginator($library->getCount(), $limit);
+                    $pages->useInput(true);
+                } else {
+                    $limit = null;
+                    $pages = null;
+                }
+
+                $this->view->title     = 'Media';
+                $this->view->pages     = $pages;
+                $this->view->libraries = $library->getAll(
+                    $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
+                );
+            }
+
+            $this->send();
+        }
     }
 
     /**
