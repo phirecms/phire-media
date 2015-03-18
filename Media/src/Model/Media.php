@@ -61,6 +61,29 @@ class Media extends AbstractModel
             $library = new MediaLibrary();
             $library->getById($data['library_id']);
 
+            $data['library_folder'] = $library->folder;
+            $data['icon'] = $this->getFileIcon($data['file'], $library);
+
+            $this->data = array_merge($this->data, $data);
+        }
+    }
+
+    /**
+     * Get media by file
+     *
+     * @param  string $file
+     * @return void
+     */
+    public function getByFile($file)
+    {
+        $media = Table\Media::findBy(['file' => $file]);
+        if (isset($media->id)) {
+            $data = $media->getColumns();
+
+            $library = new MediaLibrary();
+            $library->getById($data['library_id']);
+
+            $data['library_folder'] = $library->folder;
             $data['icon'] = $this->getFileIcon($data['file'], $library);
 
             $this->data = array_merge($this->data, $data);

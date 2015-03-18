@@ -68,6 +68,36 @@ class MediaLibrary extends AbstractModel
     }
 
     /**
+     * Get library by folder
+     *
+     * @param  string $folder
+     * @return void
+     */
+    public function getByFolder($folder)
+    {
+        $library = Table\MediaLibraries::findBy(['folder' => $folder]);
+        if (isset($library->id)) {
+            $data = $library->getColumns();
+            $data['max_filesize'] = $this->unparseMaxFilesize($data['max_filesize']);
+
+            if (null !== $data['actions']) {
+                $actions = unserialize($data['actions']);
+                $keys    = array_keys($actions);
+                $values  = array_values($actions);
+                if (isset($keys[0]) && isset($values[0])) {
+                    $data['action_name_1']    = $keys[0];
+                    $data['action_method_1']  = $values[0]['method'];
+                    $data['action_params_1']  = $values[0]['params'];
+                    $data['action_quality_1'] = $values[0]['quality'];
+                }
+                $data['actions'] = $actions;
+            }
+
+            $this->data = array_merge($this->data, $data);
+        }
+    }
+
+    /**
      * Save new library
      *
      * @param  array $fields
