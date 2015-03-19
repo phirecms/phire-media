@@ -9,7 +9,6 @@
 
 CREATE SEQUENCE library_id_seq START 30001;
 
-DROP TABLE IF EXISTS "[{prefix}]media_libraries" CASCADE;
 CREATE TABLE IF NOT EXISTS "[{prefix}]media_libraries" (
   "id" integer NOT NULL DEFAULT nextval('library_id_seq'),
   "name" varchar(255) NOT NULL,
@@ -34,7 +33,6 @@ ALTER SEQUENCE library_id_seq OWNED BY "[{prefix}]media_libraries"."id";
 
 CREATE SEQUENCE media_id_seq START 31001;
 
-DROP TABLE IF EXISTS "[{prefix}]media_libraries" CASCADE;
 CREATE TABLE IF NOT EXISTS "[{prefix}]media" (
   "id" integer NOT NULL DEFAULT nextval('media_id_seq'),
   "library_id" integer NOT NULL,

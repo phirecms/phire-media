@@ -12,7 +12,7 @@ class Media extends AbstractModel
 {
 
     /**
-     * Get all libraries
+     * Get all media
      *
      * @param  int    $limit
      * @param  int    $page
