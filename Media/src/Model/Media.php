@@ -426,49 +426,4 @@ class Media extends AbstractModel
         $dir->emptyDir(true);
     }
 
-    /**
-     * Add media library types to models of the module config for the application
-     *
-     * @param  \Phire\Application $application
-     * @return void
-     */
-    public static function addModels(\Phire\Application $application)
-    {
-        $resources = $application->config()['resources'];
-        $params    = $application->services()->getParams('nav.phire');
-        $config    = $application->module('Media');
-        $libraries = \Media\Table\MediaLibraries::findAll(null, ['order' => 'order ASC']);
-        foreach ($libraries->rows() as $library) {
-            if (isset($config['models']) && isset($config['models']['Media\Model\Media'])) {
-                $config['models']['Media\Model\Media'][] = [
-                    'type_field' => 'library_id',
-                    'type_value' => $library->id,
-                    'type_name'  => $library->name
-                ];
-
-                $resources['media-library-' . $library->id . '|media-library-' . str_replace(' ', '-', strtolower($library->name))] = [
-                    'index', 'add', 'edit', 'remove'
-                ];
-
-                if (!isset($params['tree']['media']['children'])) {
-                    $params['tree']['media']['children'] = [];
-                }
-
-                $params['tree']['media']['children']['media-library-' . $library->id] = [
-                        'name' => $library->name,
-                        'href' => '/media/' . $library->id,
-                        'acl'  => [
-                            'resource'   => 'media-library-' . $library->id,
-                            'permission' => 'index'
-                        ]
-                ];
-            }
-        }
-
-        $application->mergeConfig(['resources' => $resources]);
-        $application->services()->setParams('nav.phire', $params);
-        $application->mergeModuleConfig('Media', $config);
-
-    }
-
 }
