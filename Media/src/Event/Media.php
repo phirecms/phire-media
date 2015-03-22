@@ -9,12 +9,12 @@ class Media
 {
 
     /**
-     * Add media library types to models of the module config for the application
+     * Bootstrap the module
      *
      * @param  Application $application
      * @return void
      */
-    public static function addModels(Application $application)
+    public static function bootstrap(Application $application)
     {
         $resources = $application->config()['resources'];
         $params    = $application->services()->getParams('nav.phire');

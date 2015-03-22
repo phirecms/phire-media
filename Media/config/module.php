@@ -39,7 +39,7 @@ return [
         'events' => [
             [
                 'name'     => 'app.route.pre',
-                'action'   => 'Media\Event\Media::addModels',
+                'action'   => 'Media\Event\Media::bootstrap',
                 'priority' => 1000
             ]
         ]
