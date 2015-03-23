@@ -1,5 +1,5 @@
 <?php include $phireHeader; ?>
-    <h1 class="media-header"><?=$title; ?></h1>
+    <h1 class="media-header"><?=$title; ?> : <span id="title-span"><?=$library_name; ?></span></h1>
     <div id="media-limits">
         [<span><strong>PHP Limits:</strong></span> <span>Post Max: <strong class="error"><?=ini_get('post_max_size'); ?></strong></span> | <span>Upload Max: <strong class="error"><?=ini_get('upload_max_filesize'); ?></strong></span> | <span>Max Uploads: <strong class="error"><?=ini_get('max_file_uploads'); ?></strong></span>]
     </div>

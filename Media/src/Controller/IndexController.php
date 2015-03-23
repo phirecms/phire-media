@@ -196,9 +196,10 @@ class IndexController extends AbstractController
         }
 
         $this->prepareView('edit.phtml');
-        $this->view->title = 'Media : ' . $media->title;
-        $this->view->lid   = $lid;
-        $this->view->max   = $library->getMaxFilesize();
+        $this->view->title       = 'Media';
+        $this->view->media_title = $media->title;
+        $this->view->lid         = $lid;
+        $this->view->max         = $library->getMaxFilesize();
 
         $fields = $this->application->config()['forms']['Media\Form\Media'];
         $fields[0]['library_id']['value'] = $lid;
@@ -208,6 +209,8 @@ class IndexController extends AbstractController
         $values = $media->toArray();
         $fields[1]['file']['label'] = 'Replace File?';
         unset($fields[1]['file']['required']);
+
+        $fields[1]['title']['attributes']['onkeyup'] = 'phire.changeTitle(this.value);';
 
         $width = ((null !== $media->icon_width) && ($media->icon_width < 120)) ?
             $media->icon_width : 120;

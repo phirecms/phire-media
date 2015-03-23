@@ -93,7 +93,8 @@ class LibraryController extends AbstractController
         $library->getById($id);
 
         $this->prepareView('libraries/edit.phtml');
-        $this->view->title = 'Media Libraries : ' . $library->name;
+        $this->view->title        = 'Media Libraries';
+        $this->view->library_name = $library->name;
 
         $fields = $this->application->config()['forms']['Media\Form\MediaLibrary'];
 
@@ -106,6 +107,8 @@ class LibraryController extends AbstractController
         if (\Pop\Image\Gmagick::isInstalled()) {
             $fields[0]['adapter']['value']['Gmagick'] = 'Gmagick';
         }
+
+        $fields[1]['name']['attributes']['onkeyup'] .= ' phire.changeTitle(this.value);';
 
         $this->view->form = new Form\MediaLibrary($fields);
         $this->view->form->addFilter('htmlentities', [ENT_QUOTES, 'UTF-8'])
