@@ -25,6 +25,11 @@
     </form>
 <?php endif; ?>
 <?php else: ?>
+<?php if ($acl->isAllowed($user->role, 'media-libraries', 'add')): ?>
+    <nav id="sub-nav">
+        <nav><a href="<?=$phireUri . '/media/libraries/add'; ?>">+ Add</a></nav>
+    </nav>
+<?php endif; ?>
     <p>There are currently no media libraries.</p>
 <?php endif; ?>
 <?php include $phireFooter; ?>
