@@ -20,7 +20,7 @@ class IndexController extends AbstractController
     public function index($lid = null)
     {
         if (null === $lid) {
-            $this->prepareView('libraries.phtml');
+            $this->prepareView('media/libraries.phtml');
             $library = new Model\MediaLibrary();
 
             if ($library->hasPages($this->config->pagination)) {
@@ -38,7 +38,7 @@ class IndexController extends AbstractController
                 $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
             );
         } else {
-            $this->prepareView('index.phtml');
+            $this->prepareView('media/index.phtml');
             $media   = new Model\Media(['lid' => $lid]);
             $library = new Model\MediaLibrary();
             $library->getById($lid);
@@ -87,7 +87,7 @@ class IndexController extends AbstractController
             $this->redirect(BASE_PATH . APP_URI . '/media');
         }
 
-        $this->prepareView('add.phtml');
+        $this->prepareView('media/add.phtml');
         $this->view->title = 'Media : ' . $library->name . ' : Add';
         $this->view->lid   = $lid;
         $this->view->max   = $library->getMaxFilesize();
@@ -134,7 +134,7 @@ class IndexController extends AbstractController
             $this->redirect(BASE_PATH . APP_URI . '/media');
         }
 
-        $this->prepareView('batch.phtml');
+        $this->prepareView('media/batch.phtml');
         $this->view->title = 'Media : ' . $library->name . ' : Batch Upload';
         $this->view->lid   = $lid;
         $this->view->max   = $library->getMaxFilesize();
@@ -195,7 +195,7 @@ class IndexController extends AbstractController
             $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid);
         }
 
-        $this->prepareView('edit.phtml');
+        $this->prepareView('media/edit.phtml');
         $this->view->title       = 'Media';
         $this->view->media_title = $media->title;
         $this->view->lid         = $lid;
@@ -274,7 +274,7 @@ class IndexController extends AbstractController
     public function browser($lid = null)
     {
         if ((null !== $this->request->getQuery('editor')) && (null !== $this->request->getQuery('type'))) {
-            $this->prepareView('browser.phtml');
+            $this->prepareView('media/browser.phtml');
             $this->view->title = 'Media Browser';
 
             $library = new Model\MediaLibrary();

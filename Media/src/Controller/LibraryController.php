@@ -29,7 +29,7 @@ class LibraryController extends AbstractController
             $pages = null;
         }
 
-        $this->prepareView('libraries/index.phtml');
+        $this->prepareView('media/libraries/index.phtml');
         $this->view->title     = 'Media Libraries';
         $this->view->pages     = $pages;
         $this->view->libraries = $library->getAll(
@@ -46,7 +46,7 @@ class LibraryController extends AbstractController
      */
     public function add()
     {
-        $this->prepareView('libraries/add.phtml');
+        $this->prepareView('media/libraries/add.phtml');
         $this->view->title = 'Media Libraries : Add';
 
         $fields = $this->application->config()['forms']['Media\Form\MediaLibrary'];
@@ -92,7 +92,7 @@ class LibraryController extends AbstractController
         $library = new Model\MediaLibrary();
         $library->getById($id);
 
-        $this->prepareView('libraries/edit.phtml');
+        $this->prepareView('media/libraries/edit.phtml');
         $this->view->title        = 'Media Libraries';
         $this->view->library_name = $library->name;
 
