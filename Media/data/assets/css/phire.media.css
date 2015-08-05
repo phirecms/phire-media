@@ -179,6 +179,14 @@
     border: solid 1px #82bfce;
 }
 
+.media-file-size {
+    margin: 0 auto;
+    padding: 0;
+    display: block;
+    text-align: center;
+    font-size: 0.9em;
+}
+
 .batch-formats {
     font-size: 0.9em;
     font-style: italic;

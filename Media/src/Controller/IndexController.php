@@ -220,7 +220,8 @@ class IndexController extends AbstractController
         $fields[0]['current_file']['value'] = $values['file'];
         $fields[0]['current_file']['label'] = '<span class="media-view-link"><a title="' . $values['file'] . '" href="' .
             BASE_PATH . CONTENT_PATH . '/' . $library->folder . '/' . $media->file .
-            '" target="_blank"><img src="' . $media->icon . '" width="' . $width . '" />' . $fileName . '</a></span>';
+            '" target="_blank"><img src="' . $media->icon . '" width="' . $width . '" />' . $fileName .
+            '</a><span class="media-file-size">[ ' . $media->filesize . ' ]</span></span>';
 
         unset($values['file']);
 

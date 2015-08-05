@@ -44,6 +44,7 @@ class Media extends AbstractModel
         foreach ($rows as $key => $value) {
             $icon = $this->getFileIcon($value->file, $library);
 
+            $value->filesize    = $this->formatFileSize($value->size);
             $value->icon        = $icon['image'];
             $value->icon_width  = $icon['width'];
             $value->icon_height = $icon['height'];
@@ -69,6 +70,7 @@ class Media extends AbstractModel
 
             $icon = $this->getFileIcon($data['file'], $library);
 
+            $data['filesize']       = $this->formatFileSize($data['size']);
             $data['library_folder'] = $library->folder;
             $data['icon']           = $icon['image'];
             $data['icon_width']     = $icon['width'];
@@ -95,6 +97,7 @@ class Media extends AbstractModel
 
             $icon = $this->getFileIcon($data['file'], $library);
 
+            $data['filesize']       = $this->formatFileSize($data['size']);
             $data['library_folder'] = $library->folder;
             $data['icon']           = $icon['image'];
             $data['icon_width']     = $icon['width'];
@@ -128,7 +131,11 @@ class Media extends AbstractModel
         $media = new Table\Media([
             'library_id' => $fields['library_id'],
             'title'      => $title,
-            'file'       => $fileName
+            'file'       => $fileName,
+            'size'       => filesize(
+                $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
+                $library->folder . DIRECTORY_SEPARATOR . $fileName
+            )
         ]);
         $media->save();
 
@@ -207,6 +214,11 @@ class Media extends AbstractModel
             $media->library_id = $fields['library_id'];
             $media->title      = $title;
             $media->file       = $fileName;
+            $media->size       = filesize(
+                $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
+                $library->folder . DIRECTORY_SEPARATOR . $fileName
+            );
+
             $media->save();
 
             if (isset($fields['reprocess']) && isset($fields['reprocess'][0])) {
@@ -293,6 +305,25 @@ class Media extends AbstractModel
                 $image->save($sizeFolder . DIRECTORY_SEPARATOR . $fileName);
             }
         }
+    }
+
+    /**
+     * Format file size
+     *
+     * @param  int $size
+     * @return string
+     */
+    public function formatFileSize($size)
+    {
+        if ($size >= 1000000) {
+            $result = round(($size / 1000000), 2) . ' MB';
+        } else if (($size < 1000000) && ($size >= 1000)) {
+            $result = round(($size / 1000), 2) . ' KB';
+        } else if ($size < 1000) {
+            $result = $size . ' B';
+        }
+
+        return $result;
     }
 
     /**
