@@ -118,6 +118,33 @@
     overflow: auto;
 }
 
+#browser-media-form {
+    margin: 0 0 10px 0;
+    padding: 0;
+    float: left;
+}
+
+#browser-media-form > div {
+    margin: 0;
+    padding: 0;
+}
+
+#browser-media-form > div > input[type=file] {
+    margin: 0;
+    padding: 2px;
+    height: auto;
+}
+
+#browser-media-form > div > input[type=submit] {
+    margin: 0;
+    padding: 2px 6px 2px 6px;
+    height: 31px;
+}
+
+.top-links {
+    margin-top: 5px;
+}
+
 .browser-title {
     margin: 20px 20px 0 0;
     padding: 0;

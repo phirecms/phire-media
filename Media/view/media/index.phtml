@@ -21,6 +21,7 @@
                 <th><a href="<?=$phireUri . '/media/' . $lid . '?sort=id';?>">#</a></th>
                 <th><a href="<?=$phireUri . '/media/' . $lid . '?sort=title';?>">Title</a></th>
                 <th><a href="<?=$phireUri . '/media/' . $lid . '?sort=file';?>">Filename</a></th>
+                <th class="text-center"><a href="<?=$phireUri . '/media/' . $lid . '?sort=uploaded';?>">Uploaded</a></th>
                 <th class="text-center"><a href="<?=$phireUri . '/media/' . $lid . '?sort=size';?>">Size</a></th>
                 <th class="text-center">File</th>
                 <th class="text-center"><?php if ($acl->isAllowed($user->role, 'media', 'edit')): ?>Edit<?php else: ?>&nbsp;<?php endif; ?></th>
@@ -32,6 +33,7 @@
                 <td><?=$m->id; ?></td>
                 <td><?=$m->title; ?></td>
                 <td><?=$m->file; ?></td>
+                <td class="text-center"><?=date($config->datetime_format, strtotime($m->uploaded)); ?></td>
                 <td class="text-center"><?=$m->filesize; ?></td>
                 <td class="text-center"><a href="<?=BASE_PATH . CONTENT_PATH . '/' . $folder . '/' . $m->file; ?>" target="_blank"><img src="<?=$m->icon; ?>" height="32" /></a></td>
                 <td><?php if ($acl->isAllowed($user->role, 'media', 'edit')): ?><a class="edit-link" href="<?=$phireUri . '/media/edit/' . $lid . '/' . $m->id; ?>">Edit</a><?php else: ?>&nbsp;<?php endif; ?></td>

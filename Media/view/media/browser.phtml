@@ -3,7 +3,7 @@
 
 <head>
 
-    <title>Phire CMS : <?=$title; ?></title>
+    <title><?=$systemTitle; ?> : <?=$title; ?></title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -56,8 +56,18 @@
     </header>
     <div id="browser-content">
 <?php if (isset($media) && (count($media) > 0)): ?>
+    <form action="<?=$_SERVER['REQUEST_URI']; ?>" method="post" id="browser-media-form" enctype="multipart/form-data">
+        <div>
+            <input type="file" name="file" id="file" value="" required="required" size="30" />
+            <input type="hidden" name="library_id" id="library_id" value="<?=$lid; ?>" />
+            <input type="submit" name="submit" id="submit" value="Upload" />
+<?php if (isset($_GET['error'])): ?>
+            <br /><strong class="error">There was an error uploading the file.</strong>
+<?php endif; ?>
+        </div>
+    </form>
 <?php if (null !== $pages): ?>
-    <div class="page-links"><?=$pages; ?></div>
+    <div class="page-links top-links"><?=$pages; ?></div>
 <?php endif; ?>
     <table class="data-table" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -103,6 +113,7 @@
 <?php endif; ?>
     </div>
 </div>
+<div id="saved">Saved</div>
 </body>
 
 </html>

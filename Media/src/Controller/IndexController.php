@@ -280,8 +280,25 @@ class IndexController extends AbstractController
 
             $library = new Model\MediaLibrary();
             if (null !== $lid) {
-                $media   = new Model\Media(['lid' => $lid]);
                 $library->getById($lid);
+                if ($this->request->isPost()) {
+                    $settings = $library->getSettings();
+
+                    if (count($settings) == 4) {
+                        $upload = new \Pop\File\Upload(
+                            $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
+                        );
+                        if ($upload->test($_FILES['file'])) {
+                            $media = new Model\Media();
+                            $media->save($_FILES['file'], $this->request->getPost());
+                            $this->redirect(str_replace('&error=1', '', $_SERVER['REQUEST_URI']) . '&saved=' . time());
+                        } else {
+                            $this->redirect(str_replace('&error=1', '', $_SERVER['REQUEST_URI']) . '&error=1');
+                        }
+                    }
+                }
+
+                $media   = new Model\Media(['lid' => $lid]);
 
                 if ($this->services['acl']->isAllowed($this->sess->user->role, 'media-library-' . $library->id, 'index')) {
                     if ($media->hasPages($this->config->pagination)) {

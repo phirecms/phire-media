@@ -21,7 +21,7 @@ class Media extends AbstractModel
      */
     public function getAll($limit = null, $page = null, $sort = null)
     {
-        $order = $this->getSortOrder($sort, $page);
+        $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : 'id DESC';
 
         if (null !== $limit) {
             $page = ((null !== $page) && ((int)$page > 1)) ?
@@ -135,7 +135,8 @@ class Media extends AbstractModel
             'size'       => filesize(
                 $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
                 $library->folder . DIRECTORY_SEPARATOR . $fileName
-            )
+            ),
+            'uploaded'   => date('Y-m-d H:i:s')
         ]);
         $media->save();
 
@@ -218,6 +219,7 @@ class Media extends AbstractModel
                 $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
                 $library->folder . DIRECTORY_SEPARATOR . $fileName
             );
+            $media->uploaded   = date('Y-m-d H:i:s');
 
             $media->save();
 
