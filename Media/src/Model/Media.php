@@ -136,7 +136,8 @@ class Media extends AbstractModel
                 $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
                 $library->folder . DIRECTORY_SEPARATOR . $fileName
             ),
-            'uploaded'   => date('Y-m-d H:i:s')
+            'uploaded'   => date('Y-m-d H:i:s'),
+            'order'      => (int)$fields['order']
         ]);
         $media->save();
 
@@ -220,6 +221,7 @@ class Media extends AbstractModel
                 $library->folder . DIRECTORY_SEPARATOR . $fileName
             );
             $media->uploaded   = date('Y-m-d H:i:s');
+            $media->order      = (int)$fields['order'];
 
             $media->save();
 

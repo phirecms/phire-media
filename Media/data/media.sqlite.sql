@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS "[{prefix}]media" (
   "file" varchar NOT NULL,
   "size" integer NOT NULL,
   "uploaded" datetime NOT NULL,
+  "order" integer,
   PRIMARY KEY ("id"),
   CONSTRAINT "fk_media_library" FOREIGN KEY ("library_id") REFERENCES "[{prefix}]media_libraries" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 ) ;

@@ -19,6 +19,14 @@ return [
                 'value' => null
 
             ],
+            'order' => [
+                'type'  => 'text',
+                'label' => 'Order',
+                'value' => 0,
+                'attributes' => [
+                    'size'  => 2
+                ]
+            ],
             'library_id' => [
                 'type'  => 'hidden',
                 'value' => 0
