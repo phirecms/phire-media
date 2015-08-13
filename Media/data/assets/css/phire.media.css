@@ -10,7 +10,17 @@
     border-top: solid 1px #ccc;
 }
 
-#media-form > dl:first-child, #media-batch-form > dl:first-child, #media-library-form > dl:first-child {
+#media-form > dl:first-child {
+    margin: 0 0 0 20px;
+    padding: 0 0 0 20px;
+    width: 250px;
+    border-left: solid 1px #ccc;
+    float: right;
+    min-height: 460px;
+    height: 100%;
+}
+
+#media-batch-form > dl:first-child, #media-library-form > dl:first-child {
     margin: 0 0 0 20px;
     padding: 0 0 0 20px;
     width: 160px;
@@ -20,7 +30,7 @@
     height: 100%;
 }
 
-#media-form > dl:first-child > dd, #media-form > dl:first-child > dt,
+#media-form > dl:first-child > dt,
 #media-batch-form > dl:first-child > dd, #media-batch-form > dl:first-child > dt,
 #media-library-form > dl:first-child > dd, #media-library-form > dl:first-child > dt {
     width: 100%;
@@ -31,7 +41,15 @@
     border-bottom: dotted 1px #aaa;
 }
 
-#media-form-field-group-2, #media-batch-form-field-group-2, #media-library-form-field-group-2 {
+#media-form-field-group-1 > dd:first-child {
+    width: 200px;
+}
+
+#media-form-field-group-2 {
+    width: calc(100% - 310px);
+}
+
+#media-batch-form-field-group-2, #media-library-form-field-group-2 {
     width: calc(100% - 220px);
 }
 
