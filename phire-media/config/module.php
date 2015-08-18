@@ -1,6 +1,6 @@
 <?php
 /**
- * Module Name: Media
+ * Module Name: phire-media
  * Author: Nick Sagona
  * Description: This is the media module for Phire CMS 2
  * Version: 1.0
