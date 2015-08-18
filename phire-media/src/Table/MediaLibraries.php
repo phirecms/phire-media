@@ -1,6 +1,6 @@
 <?php
 
-namespace Media\Table;
+namespace Phire\Media\Table;
 
 use Pop\Db\Record;
 
