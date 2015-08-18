@@ -21,7 +21,7 @@ class Media extends AbstractModel
      */
     public function getAll($limit = null, $page = null, $sort = null)
     {
-        $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : 'id DESC';
+        $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : 'id ASC';
 
         if (null !== $limit) {
             $page = ((null !== $page) && ((int)$page > 1)) ?
@@ -137,7 +137,7 @@ class Media extends AbstractModel
                 $library->folder . DIRECTORY_SEPARATOR . $fileName
             ),
             'uploaded'   => date('Y-m-d H:i:s'),
-            'order'      => (int)$fields['order']
+            'order'      => (isset($fields['order'])) ? (int)$fields['order'] : 0
         ]);
         $media->save();
 
