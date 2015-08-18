@@ -1,8 +1,8 @@
 <?php
 
-namespace Media\Form;
+namespace Phire\Media\Form;
 
-use Media\Table;
+use Phire\Media\Table;
 use Pop\Form\Form;
 use Pop\Validator;
 

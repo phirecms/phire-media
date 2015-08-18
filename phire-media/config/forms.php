@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'Media\Form\Media' => [
+    'Phire\Media\Form\Media' => [
         [
             'submit' => [
                 'type'       => 'submit',
@@ -56,7 +56,7 @@ return [
             ]
         ]
     ],
-    'Media\Form\Batch' => [
+    'Phire\Media\Form\Batch' => [
         [
             'submit' => [
                 'type'       => 'submit',
@@ -99,7 +99,7 @@ return [
             ]
         ]
     ],
-    'Media\Form\MediaLibrary' => [
+    'Phire\Media\Form\MediaLibrary' => [
         [
             'submit' => [
                 'type'       => 'submit',

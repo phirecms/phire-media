@@ -6,8 +6,8 @@
  * Version: 1.0
  */
 return [
-    'Media' => [
-        'prefix'     => 'Media\\',
+    'phire-media' => [
+        'prefix'     => 'Phire\Media\\',
         'src'        => __DIR__ . '/../src',
         'routes'     => include 'routes.php',
         'resources'  => include 'resources.php',
@@ -34,12 +34,12 @@ return [
             ]
         ],
         'models' => [
-            'Media\Model\Media' => []
+            'Phire\Media\Model\Media' => []
         ],
         'events' => [
             [
                 'name'     => 'app.route.pre',
-                'action'   => 'Media\Event\Media::bootstrap',
+                'action'   => 'Phire\Media\Event\Media::bootstrap',
                 'priority' => 1000
             ]
         ]

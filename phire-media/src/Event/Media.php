@@ -1,8 +1,8 @@
 <?php
 
-namespace Media\Event;
+namespace Phire\Media\Event;
 
-use Media\Table;
+use Phire\Media\Table;
 use Pop\Application;
 
 class Media
@@ -18,16 +18,16 @@ class Media
     {
         $resources = $application->config()['resources'];
         $params    = $application->services()->getParams('nav.phire');
-        $config    = $application->module('Media');
+        $config    = $application->module('phire-media');
         $models    = (isset($config['models'])) ? $config['models'] : null;
         $libraries = Table\MediaLibraries::findAll(null, ['order' => 'order ASC']);
         foreach ($libraries->rows() as $library) {
             if (null !== $models) {
-                if (!isset($models['Media\Model\Media'])) {
-                    $models['Media\Model\Media'] = [];
+                if (!isset($models['Phire\Media\Model\Media'])) {
+                    $models['Phire\Media\Model\Media'] = [];
                 }
 
-                $models['Media\Model\Media'][] = [
+                $models['Phire\Media\Model\Media'][] = [
                     'type_field' => 'library_id',
                     'type_value' => $library->id,
                     'type_name'  => $library->name
@@ -55,7 +55,7 @@ class Media
         $application->mergeConfig(['resources' => $resources]);
         $application->services()->setParams('nav.phire', $params);
         if (null !== $models) {
-            $application->module('Media')->mergeConfig(['models' => $models]);
+            $application->module('phire-media')->mergeConfig(['models' => $models]);
         }
     }
 

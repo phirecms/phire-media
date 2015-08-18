@@ -1,10 +1,10 @@
 <?php
 
-namespace Media\Controller;
+namespace Phire\Media\Controller;
 
-use Media\Model;
-use Media\Form;
-use Media\Table;
+use Phire\Media\Model;
+use Phire\Media\Form;
+use Phire\Media\Table;
 use Phire\Controller\AbstractController;
 use Pop\Paginator\Paginator;
 
@@ -49,7 +49,7 @@ class LibraryController extends AbstractController
         $this->prepareView('media/libraries/add.phtml');
         $this->view->title = 'Media Libraries : Add';
 
-        $fields = $this->application->config()['forms']['Media\Form\MediaLibrary'];
+        $fields = $this->application->config()['forms']['Phire\Media\Form\MediaLibrary'];
 
         if (\Pop\Image\Gd::isInstalled()) {
             $fields[0]['adapter']['value']['Gd'] = 'Gd';
@@ -96,7 +96,7 @@ class LibraryController extends AbstractController
         $this->view->title        = 'Media Libraries';
         $this->view->library_name = $library->name;
 
-        $fields = $this->application->config()['forms']['Media\Form\MediaLibrary'];
+        $fields = $this->application->config()['forms']['Phire\Media\Form\MediaLibrary'];
 
         if (\Pop\Image\Gd::isInstalled()) {
             $fields[0]['adapter']['value']['Gd'] = 'Gd';

@@ -3,7 +3,7 @@
 return [
     APP_URI => [
         '/media[/:lid]' => [
-            'controller' => 'Media\Controller\IndexController',
+            'controller' => 'Phire\Media\Controller\IndexController',
             'action'     => 'index',
             'acl'        => [
                 'resource'   => 'media',
@@ -11,7 +11,7 @@ return [
             ]
         ],
         '/media/add/:lid' => [
-            'controller' => 'Media\Controller\IndexController',
+            'controller' => 'Phire\Media\Controller\IndexController',
             'action'     => 'add',
             'acl'        => [
                 'resource'   => 'media',
@@ -19,7 +19,7 @@ return [
             ]
         ],
         '/media/batch/:lid' => [
-            'controller' => 'Media\Controller\IndexController',
+            'controller' => 'Phire\Media\Controller\IndexController',
             'action'     => 'batch',
             'acl'        => [
                 'resource'   => 'media',
@@ -27,7 +27,7 @@ return [
             ]
         ],
         '/media/edit/:lid/:id' => [
-            'controller' => 'Media\Controller\IndexController',
+            'controller' => 'Phire\Media\Controller\IndexController',
             'action'     => 'edit',
             'acl'        => [
                 'resource'   => 'media',
@@ -35,7 +35,7 @@ return [
             ]
         ],
         '/media/remove/:lid' => [
-            'controller' => 'Media\Controller\IndexController',
+            'controller' => 'Phire\Media\Controller\IndexController',
             'action'     => 'remove',
             'acl'        => [
                 'resource'   => 'media',
@@ -43,7 +43,7 @@ return [
             ]
         ],
         '/media/browser[/:lid]' => [
-            'controller' => 'Media\Controller\IndexController',
+            'controller' => 'Phire\Media\Controller\IndexController',
             'action'     => 'browser',
             'acl'        => [
                 'resource'   => 'media',
@@ -51,7 +51,7 @@ return [
             ]
         ],
         '/media/libraries[/]' => [
-            'controller' => 'Media\Controller\LibraryController',
+            'controller' => 'Phire\Media\Controller\LibraryController',
             'action'     => 'index',
             'acl'        => [
                 'resource'   => 'media-libraries',
@@ -59,7 +59,7 @@ return [
             ]
         ],
         '/media/libraries/add' => [
-            'controller' => 'Media\Controller\LibraryController',
+            'controller' => 'Phire\Media\Controller\LibraryController',
             'action'     => 'add',
             'acl'        => [
                 'resource'   => 'media-libraries',
@@ -67,7 +67,7 @@ return [
             ]
         ],
         '/media/libraries/edit/:id' => [
-            'controller' => 'Media\Controller\LibraryController',
+            'controller' => 'Phire\Media\Controller\LibraryController',
             'action'     => 'edit',
             'acl'        => [
                 'resource'   => 'media-libraries',
@@ -75,7 +75,7 @@ return [
             ]
         ],
         '/media/libraries/json/:id' => [
-            'controller' => 'Media\Controller\LibraryController',
+            'controller' => 'Phire\Media\Controller\LibraryController',
             'action'     => 'json',
             'acl'        => [
                 'resource'   => 'media-libraries',
@@ -83,7 +83,7 @@ return [
             ]
         ],
         '/media/libraries/process' => [
-            'controller' => 'Media\Controller\LibraryController',
+            'controller' => 'Phire\Media\Controller\LibraryController',
             'action'     => 'process',
             'acl'        => [
                 'resource'   => 'media-libraries',

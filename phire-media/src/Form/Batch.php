@@ -1,6 +1,6 @@
 <?php
 
-namespace Media\Form;
+namespace Phire\Media\Form;
 
 use Pop\File\Upload;
 use Pop\Form\Form;

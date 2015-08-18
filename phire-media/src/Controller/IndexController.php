@@ -1,10 +1,10 @@
 <?php
 
-namespace Media\Controller;
+namespace Phire\Media\Controller;
 
-use Media\Model;
-use Media\Form;
-use Media\Table;
+use Phire\Media\Model;
+use Phire\Media\Form;
+use Phire\Media\Table;
 use Phire\Controller\AbstractController;
 use Pop\Paginator\Paginator;
 
@@ -92,7 +92,7 @@ class IndexController extends AbstractController
         $this->view->lid   = $lid;
         $this->view->max   = $library->getMaxFilesize();
 
-        $fields = $this->application->config()['forms']['Media\Form\Media'];
+        $fields = $this->application->config()['forms']['Phire\Media\Form\Media'];
         $fields[0]['library_id']['value'] = $lid;
         $this->view->form = new Form\Media($fields);
 
@@ -139,7 +139,7 @@ class IndexController extends AbstractController
         $this->view->lid   = $lid;
         $this->view->max   = $library->getMaxFilesize();
 
-        $fields = $this->application->config()['forms']['Media\Form\Batch'];
+        $fields = $this->application->config()['forms']['Phire\Media\Form\Batch'];
         $fields[0]['library_id']['value'] = $lid;
 
         $fields[2]['batch_archive']['label']      = 'Batch Archive File <span class="batch-formats">(' . implode(', ', array_keys(\Pop\Archive\Archive::getFormats())) .')</span>';
@@ -201,7 +201,7 @@ class IndexController extends AbstractController
         $this->view->lid         = $lid;
         $this->view->max         = $library->getMaxFilesize();
 
-        $fields = $this->application->config()['forms']['Media\Form\Media'];
+        $fields = $this->application->config()['forms']['Phire\Media\Form\Media'];
         $fields[0]['library_id']['value'] = $lid;
         $fields[0]['reprocess']['type']   = 'checkbox';
         $fields[0]['reprocess']['value']  = ['1' => 'Re-process?'];
