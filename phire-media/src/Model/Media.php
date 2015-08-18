@@ -360,7 +360,7 @@ class Media extends AbstractModel
         }
 
         if (null === $icon['image']) {
-            $iconFolder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/';
+            $iconFolder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/assets/phire-media/img/icons/50x50/';
             $fileParts  = pathinfo($fileName);
             $ext        = $fileParts['extension'];
             if (!empty($ext)) {
@@ -369,19 +369,19 @@ class Media extends AbstractModel
                 }
 
                 if (file_exists($iconFolder . $ext . '.png')) {
-                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/' . $ext . '.png';
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/phire-media/img/icons/50x50/' . $ext . '.png';
                 } else if (($ext == 'wav') || ($ext == 'aif') || ($ext == 'aiff') ||
                     ($ext == 'mp3') || ($ext == 'mp2') || ($ext == 'flac') ||
                     ($ext == 'wma') || ($ext == 'aac') || ($ext == 'swa')) {
-                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/aud.png';
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/phire-media/img/icons/50x50/aud.png';
                 } else if (($ext == '3gp') || ($ext == 'asf') || ($ext == 'avi') ||
                     ($ext == 'mpg') || ($ext == 'm4v') || ($ext == 'mov') ||
                     ($ext == 'mpeg') || ($ext == 'wmv')) {
-                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/vid.png';
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/phire-media/img/icons/50x50/vid.png';
                 } else if (($ext == 'bmp') || ($ext == 'ico') || ($ext == 'tiff') || ($ext == 'tif')) {
-                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/img.png';
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/phire-media/img/icons/50x50/img.png';
                 } else {
-                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/media/img/icons/50x50/file.png';
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/assets/phire-media/img/icons/50x50/file.png';
                 }
             }
         }
