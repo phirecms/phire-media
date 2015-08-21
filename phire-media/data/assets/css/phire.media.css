@@ -10,7 +10,7 @@
     border-top: solid 1px #ccc;
 }
 
-#media-form > dl:first-child {
+#media-form > dl:first-child, #media-batch-form > dl:first-child {
     margin: 0 0 0 20px;
     padding: 0 0 0 20px;
     width: 250px;
@@ -20,7 +20,7 @@
     height: 100%;
 }
 
-#media-batch-form > dl:first-child, #media-library-form > dl:first-child {
+#media-library-form > dl:first-child {
     margin: 0 0 0 20px;
     padding: 0 0 0 20px;
     width: 160px;
@@ -45,11 +45,11 @@
     width: 200px;
 }
 
-#media-form-field-group-2 {
+#media-form-field-group-2, #media-batch-form-field-group-2 {
     width: calc(100% - 310px);
 }
 
-#media-batch-form-field-group-2, #media-library-form-field-group-2 {
+#media-library-form-field-group-2 {
     width: calc(100% - 220px);
 }
 
@@ -57,7 +57,7 @@
     clear: left;
     margin: 0;
     padding: 15px 0 0 0;
-    width: calc(100% - 220px);
+    width: calc(100% - 310px);
     border-top: solid 1px #ccc;
 }
 

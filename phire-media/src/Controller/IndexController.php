@@ -165,6 +165,7 @@ class IndexController extends AbstractController
                      ->filter();
                 $media = new Model\Media();
                 $media->batch($_FILES, $this->view->form->getFields());
+                $this->view->id = $media->ids;
                 $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid . '?saved=' . time());
             }
         }

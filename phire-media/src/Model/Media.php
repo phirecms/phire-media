@@ -21,7 +21,7 @@ class Media extends AbstractModel
      */
     public function getAll($limit = null, $page = null, $sort = null)
     {
-        $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : 'id ASC';
+        $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : 'id DESC';
 
         if (null !== $limit) {
             $page = ((null !== $page) && ((int)$page > 1)) ?
@@ -162,12 +162,14 @@ class Media extends AbstractModel
      */
     public function batch(array $files, array $fields)
     {
+        $this->data['ids'] = [];
         foreach ($files as $key => $file) {
             if (($key == 'batch_archive') && !empty($file['name']))  {
                 $this->processBatch($file, $fields);
             } else {
                 if (!empty($file['name'])) {
                     $this->save($file, $fields);
+                    $this->data['ids'][] = $this->data['id'];
                 }
             }
         }
