@@ -455,6 +455,8 @@ class Media extends AbstractModel
                 ]);
                 $media->save();
 
+                $this->data['ids'][] = $media->id;
+
                 if (null !== $library->adapter) {
                     $class = 'Pop\Image\\' . $library->adapter;
                     $formats = array_keys($class::getFormats());
