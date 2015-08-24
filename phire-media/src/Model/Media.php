@@ -444,8 +444,14 @@ class Media extends AbstractModel
                 $title = ucwords(str_replace(['_', '-'], [' ', ' '], substr($fileName, 0, strrpos($fileName, '.'))));
                 $media = new Table\Media([
                     'library_id' => $fields['library_id'],
-                    'title' => $title,
-                    'file' => $fileName
+                    'title'      => $title,
+                    'file'       => $fileName,
+                    'size'       => filesize(
+                        $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
+                        $library->folder . DIRECTORY_SEPARATOR . $fileName
+                    ),
+                    'uploaded'   => date('Y-m-d H:i:s'),
+                    'order'      => 0
                 ]);
                 $media->save();
 

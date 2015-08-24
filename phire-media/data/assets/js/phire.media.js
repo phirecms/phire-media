@@ -155,6 +155,16 @@ phire.loadEditor = function(editor, id) {
 };
 
 jax(document).ready(function(){
+    if (jax('#media-form')[0] != undefined) {
+        jax('#media-form').submit(function(){
+            jax('#loading').show();
+        });
+    }
+    if (jax('#media-batch-form')[0] != undefined) {
+        jax('#media-batch-form').submit(function(){
+            jax('#loading').show();
+        });
+    }
     if (jax('#medias-form')[0] != undefined) {
         jax('#checkall').click(function(){
             if (this.checked) {
