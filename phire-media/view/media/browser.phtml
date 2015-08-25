@@ -55,7 +55,7 @@
         <a class="logo" href="<?=$phireUri . '/media/browser?' . http_build_query($_GET); ?>">Home</a>
     </header>
     <div id="browser-content">
-<?php if (isset($media) && (count($media) > 0)): ?>
+<?php if (isset($browserAssets) && ($_GET['asset_type'] == 'media')): ?>
     <form action="<?=$_SERVER['REQUEST_URI']; ?>" method="post" id="browser-media-form" enctype="multipart/form-data">
         <div>
             <input type="file" name="file" id="file" value="" required="required" size="30" />
@@ -66,17 +66,36 @@
 <?php endif; ?>
         </div>
     </form>
+<?php endif; ?>
+<?php if (isset($browserAssets) && (count($browserAssets) > 0)): ?>
+<?php if (isset($assetType)): ?>
+        <h3><?=$assetType; ?></h3>
+<?php endif; ?>
 <?php if (null !== $pages): ?>
     <div class="page-links top-links"><?=$pages; ?></div>
 <?php endif; ?>
     <table class="data-table" cellpadding="0" cellspacing="0" border="0">
+<?php if ($_GET['asset_type'] == 'content'): ?>
         <tr>
-            <th><a href="<?=$phireUri . '/media?sort=id';?>">#</a></th>
-            <th><a href="<?=$phireUri . '/media?sort=title';?>">Title</a></th>
+            <th>#</th>
+            <th>Title</th>
+            <th>URI</th>
+        </tr>
+<?php foreach ($browserAssets as $c): ?>
+        <tr>
+            <td><?=$c['id']; ?></td>
+            <td><?=$c['title']; ?></td>
+            <td><a class="small-link" href="<?=$c['uri']; ?>" onclick="<?=$click; ?>"><?=$c['uri'] . (($c['uri'] == '/') ? ' [Index]' : null); ?></a></td>
+        </tr>
+<?php endforeach; ?>
+<?php else: ?>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
             <th class="text-center">File</th>
             <th>Sizes</th>
         </tr>
-<?php foreach ($media as $m): ?>
+<?php foreach ($browserAssets as $m): ?>
         <tr>
             <td><?=$m->id; ?></td>
             <td><?=$m->title; ?></td>
@@ -93,23 +112,26 @@
             </td>
         </tr>
 <?php endforeach; ?>
+<?php endif; ?>
     </table>
 <?php elseif (isset($libraries) && (count($libraries) > 0)): ?>
-<?php if (null !== $pages): ?>
-    <div class="page-links"><?=$pages; ?></div>
-<?php endif; ?>
+<?php foreach ($libraries as $library => $types): ?>
     <table class="data-table" cellpadding="0" cellspacing="0" border="0">
         <tr>
-            <th>Media Libraries</th>
+            <th><?=$library; ?></th>
         </tr>
-<?php foreach ($libraries as $library): ?>
+<?php foreach ($types as $id => $type): ?>
         <tr>
-            <td><?php if ($acl->isAllowed($user->role, 'media-library-' . $library->id, 'index')): ?><a href="<?=$phireUri . '/media/browser/' . $library->id . '?' . http_build_query($_GET); ?>"><?=$library->name; ?></a><?php else: echo $library->name;?><?php endif; ?></td>
+            <td><a href="<?=$phireUri . '/media/browser/' . $id . '?' . http_build_query($_GET) . '&asset=' . $_GET['type'] . '&asset_type=' . strtolower($library); ?>"><?=$type; ?></a></td>
         </tr>
 <?php endforeach; ?>
     </table>
+<?php endforeach; ?>
 <?php else: ?>
-    <p>There are currently no media assets.</p>
+<?php if (isset($assetType)): ?>
+    <h3><?=$assetType; ?></h3>
+<?php endif; ?>
+    <p style="clear: both;">There are currently no assets.</p>
 <?php endif; ?>
     </div>
 </div>

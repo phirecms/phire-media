@@ -279,66 +279,99 @@ class IndexController extends AbstractController
             $this->prepareView('media/browser.phtml');
             $this->view->title = 'Media Browser';
 
-            $library = new Model\MediaLibrary();
-            if (null !== $lid) {
+            if ($this->request->isPost()) {
+                $library = new Model\MediaLibrary();
                 $library->getById($lid);
-                if ($this->request->isPost()) {
-                    $settings = $library->getSettings();
 
-                    if (count($settings) == 4) {
-                        $upload = new \Pop\File\Upload(
-                            $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
-                        );
-                        if ($upload->test($_FILES['file'])) {
-                            $media = new Model\Media();
-                            $media->save($_FILES['file'], $this->request->getPost());
-                            $this->redirect(str_replace('&error=1', '', $_SERVER['REQUEST_URI']) . '&saved=' . time());
-                        } else {
-                            $this->redirect(str_replace('&error=1', '', $_SERVER['REQUEST_URI']) . '&error=1');
+                $settings = $library->getSettings();
+
+                if (count($settings) == 4) {
+                    $upload = new \Pop\File\Upload(
+                        $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
+                    );
+                    if ($upload->test($_FILES['file'])) {
+                        $media = new Model\Media();
+                        $media->save($_FILES['file'], $this->request->getPost());
+                        $this->redirect(str_replace('&error=1', '', $_SERVER['REQUEST_URI']) . '&saved=' . time());
+                    } else {
+                        $this->redirect(str_replace('&error=1', '', $_SERVER['REQUEST_URI']) . '&error=1');
+                    }
+                }
+            }
+
+            if ((null !== $lid) && (null !== $this->request->getQuery('asset')) && (null !== $this->request->getQuery('asset_type'))) {
+                $assets = [];
+                $limit  = $this->config->pagination;
+                $page   = $this->request->getQuery('page');
+                $pages  = null;
+
+                $library = new Model\MediaLibrary();
+
+                if (($this->request->getQuery('asset_type') == 'content') && ($this->application->isRegistered('phire-content'))) {
+                    $type    = \Phire\Content\Table\ContentTypes::findById($lid);
+                    $content = \Phire\Content\Table\Content::findBy(['type_id' => $lid], null, ['order' => 'order, id ASC']);
+                    foreach ($content->rows() as $c) {
+                        $assets[] = [
+                            'id'    => $c->id,
+                            'title' => $c->title,
+                            'uri'   => BASE_PATH . $c->uri
+                        ];
+                    }
+
+                    if (isset($type->id)) {
+                        $this->view->assetType = $type->name;
+                    }
+                } else if ($this->request->getQuery('asset_type') == 'media') {
+                    $library->getById($lid);
+                    $media = new Model\Media(['lid' => $lid]);
+                    if ($this->request->getQuery('asset') == 'file') {
+                        $assets = $media->getAll();
+                    } else if ($this->request->getQuery('asset') == 'image') {
+                        $assets = $media->getAllImages();
+                    }
+
+                    $this->view->assetType = $library->name;
+                }
+
+                if (count($assets) > $limit) {
+                    $pages  = new Paginator(count($assets), $limit);
+                    $pages->useInput(true);
+                    $offset = ((null !== $page) && ((int)$page > 1)) ?
+                        ($page * $limit) - $limit : 0;
+                    $assets = array_slice($assets, $offset, $limit, true);
+                }
+
+                $this->view->title         = 'Media' . ((null !== $this->view->assetType) ? ' : '. $this->view->assetType : null);
+                $this->view->lid           = $lid;
+                $this->view->folder        = $library->folder;
+                $this->view->sizes         = (null !== $library->actions) ? array_keys($library->actions) : [];
+                $this->view->pages         = $pages;
+                $this->view->browserAssets = $assets;
+            } else {
+                $libraries = [];
+                $limit     = null;
+                $pages     = null;
+
+                if (($this->request->getQuery('type') == 'file') && ($this->application->isRegistered('phire-content'))) {
+                    $types = \Phire\Content\Table\ContentTypes::findAll(null, ['order' => 'order ASC']);
+                    if ($types->hasRows()) {
+                        $libraries['Content'] = [];
+                        foreach ($types->rows() as $type) {
+                            $libraries['Content'][$type->id] = $type->name;
                         }
                     }
                 }
 
-                $media   = new Model\Media(['lid' => $lid]);
-
-                if ($this->services['acl']->isAllowed($this->sess->user->role, 'media-library-' . $library->id, 'index')) {
-                    if ($media->hasPages($this->config->pagination)) {
-                        $limit = $this->config->pagination;
-                        $pages = new Paginator($media->getCount(), $limit);
-                        $pages->useInput(true);
-                    } else {
-                        $limit = null;
-                        $pages = null;
-                    }
-
-                    $this->view->title = 'Media : ' . $library->name;
-                    $this->view->pages = $pages;
-                    $this->view->lid = $lid;
-                    $this->view->folder = $library->folder;
-                    $this->view->sizes = (null !== $library->actions) ? array_keys($library->actions) : [];
-                    $this->view->media = $media->getAll(
-                        $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
-                    );
-                } else {
-                    $this->redirect(BASE_PATH . APP_URI . '/media/browser?' . http_build_query($_GET));
-                }
-            } else {
+                $libraries['Media'] = [];
                 $library = new Model\MediaLibrary();
-
-                if ($library->hasPages($this->config->pagination)) {
-                    $limit = $this->config->pagination;
-                    $pages = new Paginator($library->getCount(), $limit);
-                    $pages->useInput(true);
-                } else {
-                    $limit = null;
-                    $pages = null;
+                $libs    = $library->getAll();
+                foreach ($libs as $lib) {
+                    $libraries['Media'][$lib->id] = $lib->name;
                 }
 
                 $this->view->title     = 'Media';
                 $this->view->pages     = $pages;
-                $this->view->libraries = $library->getAll(
-                    $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
-                );
+                $this->view->libraries = $libraries;
             }
 
             $this->send();

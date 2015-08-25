@@ -108,6 +108,42 @@ class Media extends AbstractModel
     }
 
     /**
+     * Get all files
+     *
+     * @return array
+     */
+    public function getAllFiles()
+    {
+        $files = [];
+        $f     = $this->getAll();
+        foreach ($f as $file) {
+            if ((preg_match('/^.*\.(jpg|jpeg|png|gif)$/i', $file->file) == 0)) {
+                $files[] = $file;
+            }
+        }
+
+        return $files;
+    }
+
+    /**
+     * Get all images
+     *
+     * @return array
+     */
+    public function getAllImages()
+    {
+        $images = [];
+        $img    = $this->getAll();
+        foreach ($img as $file) {
+            if ((preg_match('/^.*\.(jpg|jpeg|png|gif)$/i', $file->file) == 1)) {
+                $images[] = $file;
+            }
+        }
+
+        return $images;
+    }
+
+    /**
      * Save new media
      *
      * @param  array $file
