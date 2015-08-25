@@ -24,7 +24,8 @@ return [
                 'label' => 'Order',
                 'value' => 0,
                 'attributes' => [
-                    'size'  => 2
+                    'size'  => 2,
+                    'class' => 'order-field'
                 ]
             ],
             'library_id' => [
@@ -123,7 +124,10 @@ return [
             'order' => [
                 'type'       => 'text',
                 'label'      => 'Order',
-                'attributes' => ['size' => 3],
+                'attributes' => [
+                    'size'  => 3,
+                    'class' => 'order-field'
+                ],
                 'value'      => 0
             ],
             'id' => [
