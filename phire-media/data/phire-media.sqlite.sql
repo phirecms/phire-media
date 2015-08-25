@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS "[{prefix}]media_libraries" (
   "actions" text,
   "adapter" varchar,
   "order" integer,
-  PRIMARY KEY ("id")
+  UNIQUE ("id")
 ) ;
 
 INSERT INTO "sqlite_sequence" ("name", "seq") VALUES ('[{prefix}]media_libraries', 30000);
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS "[{prefix}]media" (
   "size" integer NOT NULL,
   "uploaded" datetime NOT NULL,
   "order" integer,
-  PRIMARY KEY ("id"),
+  UNIQUE ("id"),
   CONSTRAINT "fk_media_library" FOREIGN KEY ("library_id") REFERENCES "[{prefix}]media_libraries" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 ) ;
 
