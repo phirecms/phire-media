@@ -340,12 +340,18 @@ class Media extends AbstractModel
             $sizeFolder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
                 $library->folder . DIRECTORY_SEPARATOR . $size;
 
-            if (file_exists($sizeFolder)) {
-                $image = new $class($folder . DIRECTORY_SEPARATOR . $fileName);
-                $image = call_user_func_array([$image, $action['method']], explode(',', $action['params']));
-                $image->setQuality($action['quality']);
-                $image->save($sizeFolder . DIRECTORY_SEPARATOR . $fileName);
+            if (!file_exists($sizeFolder)) {
+                mkdir($sizeFolder);
+                chmod($sizeFolder, 0777);
+                copy(
+                    $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . 'index.html',
+                    $sizeFolder . DIRECTORY_SEPARATOR . 'index.html'
+                );
             }
+            $image = new $class($folder . DIRECTORY_SEPARATOR . $fileName);
+            $image = call_user_func_array([$image, $action['method']], explode(',', $action['params']));
+            $image->setQuality($action['quality']);
+            $image->save($sizeFolder . DIRECTORY_SEPARATOR . $fileName);
         }
     }
 

@@ -106,12 +106,7 @@ class MediaLibrary extends AbstractModel
     public function save(array $fields)
     {
         if (!file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $fields['folder'])) {
-            mkdir($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $fields['folder']);
-            chmod($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $fields['folder'], 0777);
-            copy(
-                $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . 'index.html',
-                $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $fields['folder'] . DIRECTORY_SEPARATOR . 'index.html'
-            );
+            $this->createFolder($fields['folder']);
         }
         $library = new Table\MediaLibraries([
             'name'             => $fields['name'],
@@ -139,12 +134,7 @@ class MediaLibrary extends AbstractModel
         $library = Table\MediaLibraries::findById($fields['id']);
         if (isset($library->id)) {
             if (!file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $fields['folder'])) {
-                mkdir($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $fields['folder']);
-                chmod($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $fields['folder'], 0777);
-                copy(
-                    $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . 'index.html',
-                    $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $fields['folder'] . DIRECTORY_SEPARATOR . 'index.html'
-                );
+                $this->createFolder($fields['folder']);
             }
             $library->name             = $fields['name'];
             $library->folder           = $fields['folder'];
@@ -196,6 +186,24 @@ class MediaLibrary extends AbstractModel
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * create library folder
+     *
+     * @param  string $folder
+     * @return boolean
+     */
+    public function createFolder($folder)
+    {
+        if (!file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $folder)) {
+            mkdir($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $folder);
+            chmod($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $folder, 0777);
+            copy(
+                $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . 'index.html',
+                $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . 'index.html'
+            );
         }
     }
 

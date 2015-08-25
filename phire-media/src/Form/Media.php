@@ -2,6 +2,7 @@
 
 namespace Phire\Media\Form;
 
+use Phire\Media\Model\MediaLibrary;
 use Pop\File\Upload;
 use Pop\Form\Form;
 use Pop\Validator;

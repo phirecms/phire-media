@@ -98,6 +98,11 @@ class IndexController extends AbstractController
 
         if ($this->request->isPost()) {
             $settings = $library->getSettings();
+            $folder   = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
+            if (!file_exists($folder)) {
+                $library->createFolder($library->folder);
+            }
+
             $values   = (!empty($_FILES['file']) && !empty($_FILES['file']['name'])) ?
                 array_merge($this->request->getPost(), ['file' => $_FILES['file']['name']]) :
                 $this->request->getPost();
@@ -152,6 +157,11 @@ class IndexController extends AbstractController
 
         if ($this->request->isPost()) {
             $settings = $library->getSettings();
+            $folder   = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
+            if (!file_exists($folder)) {
+                $library->createFolder($library->folder);
+            }
+
             $values   = (!empty($_FILES['file_1']) && !empty($_FILES['file_1']['name'])) ?
                 array_merge($this->request->getPost(), ['file_1' => $_FILES['file_1']['name']]) :
                 $this->request->getPost();
@@ -232,6 +242,11 @@ class IndexController extends AbstractController
 
         if ($this->request->isPost()) {
             $settings = $library->getSettings();
+            $folder   = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
+            if (!file_exists($folder)) {
+                $library->createFolder($library->folder);
+            }
+
             $values   = (!empty($_FILES['file']) && !empty($_FILES['file']['name'])) ?
                 array_merge($this->request->getPost(), ['file' => $_FILES['file']['name']]) :
                 $this->request->getPost();
