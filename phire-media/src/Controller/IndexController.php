@@ -57,12 +57,13 @@ class IndexController extends AbstractController
                     $pages = null;
                 }
 
-                $this->view->title = 'Media : ' . $library->name;
-                $this->view->pages = $pages;
-                $this->view->lid = $lid;
-                $this->view->folder = $library->folder;
-                $this->view->media = $media->getAll(
-                    $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
+                $this->view->title       = 'Media : ' . $library->name;
+                $this->view->pages       = $pages;
+                $this->view->lid         = $lid;
+                $this->view->folder      = $library->folder;
+                $this->view->searchValue = htmlentities(strip_tags($this->request->getQuery('title')), ENT_QUOTES, 'UTF-8');
+                $this->view->media       = $media->getAll(
+                    $limit, $this->request->getQuery('page'), $this->request->getQuery('sort'), $this->request->getQuery('title')
                 );
             } else {
                 $this->redirect(BASE_PATH . APP_URI . '/media');

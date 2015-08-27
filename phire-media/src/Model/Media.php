@@ -17,25 +17,45 @@ class Media extends AbstractModel
      * @param  int    $limit
      * @param  int    $page
      * @param  string $sort
+     * @param  string $title
      * @return array
      */
-    public function getAll($limit = null, $page = null, $sort = null)
+    public function getAll($limit = null, $page = null, $sort = null, $title = null)
     {
         $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : 'id DESC';
 
-        if (null !== $limit) {
-            $page = ((null !== $page) && ((int)$page > 1)) ?
-                ($page * $limit) - $limit : null;
+        if (null !== $title) {
+            $sql = Table\Media::sql();
+            $sql->select()->where('title LIKE :title');
 
-            $rows = Table\Media::findBy(['library_id' => $this->lid], null, [
-                'offset' => $page,
-                'limit'  => $limit,
-                'order'  => $order
-            ])->rows();
+            $by = explode(' ', $order);
+            $sql->select()->orderBy($by[0], $by[1]);
+
+            if (null !== $limit) {
+                $page = ((null !== $page) && ((int)$page > 1)) ?
+                    ($page * $limit) - $limit : null;
+                if (null !== $page) {
+                    $sql->select()->offset($page);
+                }
+                $sql->select()->limit($limit);
+            }
+
+            $rows = Table\Media::execute((string)$sql, ['title' => '%' . $title . '%'])->rows();
         } else {
-            $rows = Table\Media::findBy(['library_id' => $this->lid], null, [
-                'order'  => $order
-            ])->rows();
+            if (null !== $limit) {
+                $page = ((null !== $page) && ((int)$page > 1)) ?
+                    ($page * $limit) - $limit : null;
+
+                $rows = Table\Media::findBy(['library_id' => $this->lid], null, [
+                    'offset' => $page,
+                    'limit'  => $limit,
+                    'order'  => $order
+                ])->rows();
+            } else {
+                $rows = Table\Media::findBy(['library_id' => $this->lid], null, [
+                    'order' => $order
+                ])->rows();
+            }
         }
 
         $library = new MediaLibrary();

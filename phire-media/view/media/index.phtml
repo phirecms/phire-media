@@ -1,4 +1,10 @@
 <?php include $phireHeader; ?>
+<?php if ((count($media) > 0) && $acl->isAllowed($user->role, 'media', 'search')): ?>
+    <form id="media-search-form" action="<?=$phireUri . '/media/' . $lid; ?>" method="get">
+        <div><input tabindex="2" type="submit" id="submit" value="Search" /></div>
+        <div><input tabindex="1" type="text" name="title" id="title" value="<?=$searchValue; ?>" placeholder="Title" size="25" /></div>
+    </form>
+<?php endif; ?>
     <h1 class="media-header"><?=$title; ?></h1>
 <?php if (count($media) > 0): ?>
 <?php if (null !== $pages): ?>
