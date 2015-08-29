@@ -46,13 +46,13 @@ class Media extends AbstractModel
                 $page = ((null !== $page) && ((int)$page > 1)) ?
                     ($page * $limit) - $limit : null;
 
-                $rows = Table\Media::findBy(['library_id' => $this->lid], null, [
+                $rows = Table\Media::findBy(['library_id' => $this->lid], [
                     'offset' => $page,
                     'limit'  => $limit,
                     'order'  => $order
                 ])->rows();
             } else {
-                $rows = Table\Media::findBy(['library_id' => $this->lid], null, [
+                $rows = Table\Media::findBy(['library_id' => $this->lid], [
                     'order' => $order
                 ])->rows();
             }

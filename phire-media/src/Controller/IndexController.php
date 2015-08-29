@@ -325,7 +325,7 @@ class IndexController extends AbstractController
 
                 if (($this->request->getQuery('asset_type') == 'content') && ($this->application->isRegistered('phire-content'))) {
                     $type    = \Phire\Content\Table\ContentTypes::findById($lid);
-                    $content = \Phire\Content\Table\Content::findBy(['type_id' => $lid], null, ['order' => 'order, id ASC']);
+                    $content = \Phire\Content\Table\Content::findBy(['type_id' => $lid], ['order' => 'order, id ASC']);
                     foreach ($content->rows() as $c) {
                         $assets[] = [
                             'id'    => $c->id,
@@ -369,7 +369,7 @@ class IndexController extends AbstractController
                 $pages     = null;
 
                 if (($this->request->getQuery('type') == 'file') && ($this->application->isRegistered('phire-content'))) {
-                    $types = \Phire\Content\Table\ContentTypes::findAll(null, ['order' => 'order ASC']);
+                    $types = \Phire\Content\Table\ContentTypes::findAll(['order' => 'order ASC']);
                     if ($types->hasRows()) {
                         $libraries['Content'] = [];
                         foreach ($types->rows() as $type) {

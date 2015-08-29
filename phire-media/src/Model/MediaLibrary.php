@@ -25,13 +25,13 @@ class MediaLibrary extends AbstractModel
             $page = ((null !== $page) && ((int)$page > 1)) ?
                 ($page * $limit) - $limit : null;
 
-            return Table\MediaLibraries::findAll(null, [
+            return Table\MediaLibraries::findAll([
                 'offset' => $page,
                 'limit'  => $limit,
                 'order'  => $order
             ])->rows();
         } else {
-            return Table\MediaLibraries::findAll(null, [
+            return Table\MediaLibraries::findAll([
                 'order'  => $order
             ])->rows();
         }

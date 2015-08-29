@@ -20,7 +20,7 @@ class Media
         $params    = $application->services()->getParams('nav.phire');
         $config    = $application->module('phire-media');
         $models    = (isset($config['models'])) ? $config['models'] : null;
-        $libraries = Table\MediaLibraries::findAll(null, ['order' => 'order ASC']);
+        $libraries = Table\MediaLibraries::findAll(['order' => 'order ASC']);
         foreach ($libraries->rows() as $library) {
             if (null !== $models) {
                 if (!isset($models['Phire\Media\Model\Media'])) {
