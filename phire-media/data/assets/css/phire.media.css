@@ -122,6 +122,60 @@
     padding: 0 5px 0 5px;
 }
 
+#drop-header {
+    margin: 10px auto 5px auto;
+    padding: 10px 0 0 0;
+    width: 100%;
+    height: 25px;
+    text-align: right;
+    font-size: 0.9em;
+    border-top: solid 1px #ccc;
+}
+
+#drop-header-alt {
+    margin: 10px auto 0 auto;
+    padding: 10px 0 0 0;
+    width: 100%;
+    height: 20px;
+    text-align: right;
+    font-size: 0.9em;
+    border-top: solid 1px #ccc;
+}
+
+#drop-zone {
+    margin: 0 auto;
+    padding: 105px 0 0 0;
+    width: calc(100% - 10px);
+    height: 160px;
+    font-weight: bold;
+    font-size: 2.4em;
+    text-align: center;
+}
+
+.drop-zone-off {
+    color: #aaa;
+    border: dashed 5px #aaa;
+    background-color: #eee;
+}
+
+.drop-zone-on {
+    color: #3daacc;
+    border: dashed 5px #3daacc;
+    background-color: #ccf3ff;
+}
+
+#drop-result {
+    margin: 0 auto 25px auto;
+    padding: 25px 1% 0 1%;
+    width: 98%;
+    min-height: 50px;
+    overflow: auto;
+    color: #808080;
+    font-weight: normal;
+    font-size: 0.9em;
+    line-height: 2.0em;
+}
+
 #browser-container {
     position: relative;
     min-height: 100%;
@@ -294,4 +348,16 @@
 .batch-formats {
     font-size: 0.9em;
     font-style: italic;
+}
+
+.upload-success {
+    color: green;
+    font-style: italic;
+    font-weight: bold;
+}
+
+.upload-error {
+    color: red;
+    font-style: italic;
+    font-weight: bold;
 }

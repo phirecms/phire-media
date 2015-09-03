@@ -8,12 +8,15 @@
         <nav><a href="<?=$phireUri . '/media/add/' . $lid; ?>">+ Add</a></nav>
 <?php endif; ?>
 <?php if ($acl->isAllowed($user->role, 'media', 'batch')): ?>
-        <nav><a href="<?=$phireUri . '/media/batch/' . $lid; ?>?basic=1">Batch</a></nav>
+        <nav><a href="<?=$phireUri . '/media/batch/' . $lid; ?>">Batch</a></nav>
 <?php endif; ?>
         <nav><a href="<?=$phireUri . '/media/' . $lid; ?>">Back</a></nav>
     </nav>
-    <div id="drop-header-alt">
-        Try the <a class="normal-link" href="<?=$phireUri . '/media/batch/' . $lid; ?>">drag-and-drop batch uploader</a>.
+    <div id="drop-header">
+        Having problems with the drag-and-drop batch uploader? Try the <a class="normal-link" href="<?=$phireUri . '/media/batch/' . $lid; ?>?basic=1">basic batch uploader</a>.
     </div>
-<?=$form; ?>
+    <div id="drop-zone" class="drop-zone-off" data-lid="<?=$lid; ?>">
+        Drag and drop files here.
+    </div>
+    <div id="drop-result"></div>
 <?php include $phireFooter; ?>

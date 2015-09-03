@@ -26,6 +26,14 @@ return [
                 'permission' => 'batch'
             ]
         ],
+        '/media/ajax/:lid' => [
+            'controller' => 'Phire\Media\Controller\IndexController',
+            'action'     => 'ajax',
+            'acl'        => [
+                'resource'   => 'media',
+                'permission' => 'ajax'
+            ]
+        ],
         '/media/edit/:lid/:id' => [
             'controller' => 'Phire\Media\Controller\IndexController',
             'action'     => 'edit',

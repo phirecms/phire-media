@@ -198,4 +198,66 @@ jax(document).ready(function(){
             }
         }
     }
+    if (jax('#drop-zone')[0] != undefined) {
+        jax('#drop-zone').on('dragover', function(e){
+            jax('#drop-zone').attrib('class', 'drop-zone-on');
+            e.stopPropagation();
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        }, false);
+
+        jax('#drop-zone').on('dragleave', function(e){
+            jax('#drop-zone').attrib('class', 'drop-zone-off');
+            e.stopPropagation();
+            e.preventDefault();
+        }, false);
+
+        jax('#drop-zone').on('drop', function(e){
+            jax('#drop-zone').attrib('class', 'drop-zone-off');
+            e.stopPropagation();
+            e.preventDefault();
+
+            var files       = null;
+            var appPath     = null;
+            var contentPath = null;
+            var lid         = jax('#drop-zone').data('lid');
+            if ((e.dataTransfer.files !== undefined) && (e.dataTransfer.files !== null)) {
+                files = e.dataTransfer.files;
+            } else if ((e.target.files !== undefined) && (e.target.files !== null)) {
+                files = e.target.files;
+            }
+
+            if (jax.cookie.load('phire') != '') {
+                phireCookie = jax.cookie.load('phire');
+                appPath     = phireCookie.base_path + phireCookie.app_uri;
+                contentPath = phireCookie.base_path + phireCookie.content_path;
+            }
+
+            if ((files != null) && (appPath != null) && (contentPath != null) && (lid != null)) {
+                for (var i = 0; i < files.length; i++) {
+                    var form  = new FormData();
+                    form.append("file_" + (i + 1), files[i]);
+                    var result = jax('#drop-result').val() + files[i].name + ' <img src="' + contentPath + '/assets/phire-media/img/uploading.gif" />';
+                    jax('#drop-result').val(result);
+                    $.post(appPath + '/media/ajax/' + lid, {data : form, status : { "200" : function(response){
+                        var result = jax('#drop-result').val();
+                        var update = '<strong class="upload-success">uploaded</strong>.<br />';
+                        if ((response.text != undefined) && (response.text != '')) {
+                            var resp = window.jax.parseResponse(response);
+                            if (resp.error != undefined) {
+                                update = '<strong class="upload-error">' + resp.error + '</strong>.<br />';
+                            }
+                        }
+                        result = result.substring(0, result.lastIndexOf('<img')) + ' ' + update;
+                        jax('#drop-result').val(result);
+                    }}});
+                }
+            } else {
+                jax('#drop-result').val(
+                    '<strong class="error">Drag and drop files are not supported in this browser.</strong> ' +
+                    'Try the <a class="normal-link" href="' + window.location.href + '?basic=1">basic batch uploader</a>.'
+                );
+            }
+        });
+    }
 });

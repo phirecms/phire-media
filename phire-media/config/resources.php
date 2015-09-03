@@ -5,6 +5,7 @@ return [
         'index',
         'add',
         'batch',
+        'ajax',
         'edit',
         'remove',
         'browser'

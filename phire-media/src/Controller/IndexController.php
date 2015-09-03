@@ -6,6 +6,7 @@ use Phire\Media\Model;
 use Phire\Media\Form;
 use Phire\Media\Table;
 use Phire\Controller\AbstractController;
+use Pop\File\Upload;
 use Pop\Paginator\Paginator;
 
 class IndexController extends AbstractController
@@ -126,65 +127,6 @@ class IndexController extends AbstractController
     }
 
     /**
-     * batch action method
-     *
-     * @param  int $lid
-     * @return void
-     */
-    public function batch($lid)
-    {
-        $library = new Model\MediaLibrary();
-        $library->getById($lid);
-
-        if (!isset($library->id)) {
-            $this->redirect(BASE_PATH . APP_URI . '/media');
-        }
-
-        $this->prepareView('media/batch.phtml');
-        $this->view->title = 'Media : ' . $library->name . ' : Batch Upload';
-        $this->view->lid   = $lid;
-        $this->view->max   = $library->getMaxFilesize();
-
-        $fields = $this->application->config()['forms']['Phire\Media\Form\Batch'];
-        $fields[0]['library_id']['value'] = $lid;
-
-        $fields[2]['batch_archive']['label']      = 'Batch Archive File <span class="batch-formats">(' . implode(', ', array_keys(\Pop\Archive\Archive::getFormats())) .')</span>';
-        $fields[2]['batch_archive']['validators'] = new \Pop\Validator\RegEx(
-            '/^.*\.(' . implode('|', array_keys(\Pop\Archive\Archive::getFormats())) . ')$/i',
-            'That file archive type is not allowed.'
-        );
-
-        $this->view->form = new Form\Batch($fields);
-
-        if ($this->request->isPost()) {
-            $settings = $library->getSettings();
-            $folder   = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
-            if (!file_exists($folder)) {
-                $library->createFolder($library->folder);
-            }
-
-            $values   = (!empty($_FILES['file_1']) && !empty($_FILES['file_1']['name'])) ?
-                array_merge($this->request->getPost(), ['file_1' => $_FILES['file_1']['name']]) :
-                $this->request->getPost();
-
-            $this->view->form->addFilter('htmlentities', [ENT_QUOTES, 'UTF-8'])
-                 ->setFieldValues($values, $settings);
-
-            if ($this->view->form->isValid()) {
-                $this->view->form->clearFilters()
-                     ->addFilter('html_entity_decode', [ENT_QUOTES, 'UTF-8'])
-                     ->filter();
-                $media = new Model\Media();
-                $media->batch($_FILES, $this->view->form->getFields());
-                $this->view->id = $media->ids;
-                $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid . '?saved=' . time());
-            }
-        }
-
-        $this->send();
-    }
-
-    /**
      * Edit action method
      *
      * @param  int $lid
@@ -269,6 +211,72 @@ class IndexController extends AbstractController
     }
 
     /**
+     * batch action method
+     *
+     * @param  int $lid
+     * @return void
+     */
+    public function batch($lid)
+    {
+        $library = new Model\MediaLibrary();
+        $library->getById($lid);
+
+        if (!isset($library->id)) {
+            $this->redirect(BASE_PATH . APP_URI . '/media');
+        }
+
+        if ((null !== $this->request->getQuery('basic')) && ($this->request->getQuery('basic'))) {
+            $this->prepareView('media/batch.phtml');
+            $this->view->title = 'Media : ' . $library->name . ' : Batch Upload';
+            $this->view->lid = $lid;
+            $this->view->max = $library->getMaxFilesize();
+
+            $fields = $this->application->config()['forms']['Phire\Media\Form\Batch'];
+            $fields[0]['library_id']['value'] = $lid;
+
+            $fields[2]['batch_archive']['label'] = 'Batch Archive File <span class="batch-formats">(' . implode(', ', array_keys(\Pop\Archive\Archive::getFormats())) . ')</span>';
+            $fields[2]['batch_archive']['validators'] = new \Pop\Validator\RegEx(
+                '/^.*\.(' . implode('|', array_keys(\Pop\Archive\Archive::getFormats())) . ')$/i',
+                'That file archive type is not allowed.'
+            );
+
+            $this->view->form = new Form\Batch($fields);
+
+            if ($this->request->isPost()) {
+                $settings = $library->getSettings();
+                $folder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
+                if (!file_exists($folder)) {
+                    $library->createFolder($library->folder);
+                }
+
+                $values = (!empty($_FILES['file_1']) && !empty($_FILES['file_1']['name'])) ?
+                    array_merge($this->request->getPost(), ['file_1' => $_FILES['file_1']['name']]) :
+                    $this->request->getPost();
+
+                $this->view->form->addFilter('htmlentities', [ENT_QUOTES, 'UTF-8'])
+                     ->setFieldValues($values, $settings);
+
+                if ($this->view->form->isValid()) {
+                    $this->view->form->clearFilters()
+                         ->addFilter('html_entity_decode', [ENT_QUOTES, 'UTF-8'])
+                         ->filter();
+                    $media = new Model\Media();
+                    $media->batch($_FILES, $this->view->form->getFields());
+                    $this->view->id = $media->ids;
+                    $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid . '?saved=' . time());
+                }
+            }
+        } else {
+            $this->prepareView('media/batch-ajax.phtml');
+            $this->view->title = 'Media : ' . $library->name . ' : Batch Upload';
+            $this->view->lid = $lid;
+            $this->view->max = $library->getMaxFilesize();
+        }
+
+        $this->send();
+    }
+
+    /**
      * Remove action method
      *
      * @param  int $lid
@@ -281,6 +289,44 @@ class IndexController extends AbstractController
             $media->remove($this->request->getPost());
         }
         $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid .  '?removed=' . time());
+    }
+
+    /**
+     * Ajax action method
+     *
+     * @param  int $lid
+     * @return void
+     */
+    public function ajax($lid)
+    {
+        $library = new Model\MediaLibrary();
+        $library->getById($lid);
+
+        $json = [];
+
+        if (!isset($library->id)) {
+            $json['error'] = 'That library was not found.';
+        } else {
+            $settings = $library->getSettings();
+            //$folder   = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
+
+            $upload = new Upload(
+                $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
+            );
+            foreach ($_FILES as $file) {
+                if (!empty($file['name'])) {
+                    if (!$upload->test($file)) {
+                        $json['error'] = $upload->getErrorMessage();
+                    } else {
+                        $media = new Model\Media();
+                        $media->save($file, ['library_id' => $lid]);
+                    }
+                }
+            }
+        }
+
+        $this->response->setBody(json_encode($json, JSON_PRETTY_PRINT));
+        $this->send(200, ['Content-Type' => 'application/json']);
     }
 
     /**
