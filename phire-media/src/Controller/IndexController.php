@@ -318,7 +318,7 @@ class IndexController extends AbstractController
                     if (!$upload->test($file)) {
                         $json['error'] = $upload->getErrorMessage();
                     } else {
-                        $media      = new Model\Media();
+                        $media = new Model\Media();
                         $media->save($file, ['library_id' => $lid]);
                     }
                 }
