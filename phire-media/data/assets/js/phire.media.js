@@ -3,7 +3,7 @@
  */
 
 phire.mediaActionCount = 1;
-phire.batchCount = 1;
+phire.batchCount       = 1;
 
 phire.addMediaActions = function(vals) {
     if (vals == null) {
@@ -234,22 +234,26 @@ jax(document).ready(function(){
             }
 
             if ((files != null) && (appPath != null) && (contentPath != null) && (lid != null)) {
+                jax('#drop-result').val('');
                 for (var i = 0; i < files.length; i++) {
-                    var form  = new FormData();
-                    form.append("file_" + (i + 1), files[i]);
-                    var result = jax('#drop-result').val() + files[i].name + ' <img src="' + contentPath + '/assets/phire-media/img/uploading.gif" />';
+                    var cur    = (i + 1);
+                    var form   = new FormData();
+                    var result = jax('#drop-result').val() + '<div id="file-upload-' + cur + '">' +
+                        files[i].name + ' <img id="file-upload-image-' + cur + '" src="' + contentPath + '/assets/phire-media/img/uploading.gif" /></div>';
+
+                    form.append("file_" + cur, files[i]);
                     jax('#drop-result').val(result);
-                    $.post(appPath + '/media/ajax/' + lid, {data : form, status : { "200" : function(response){
-                        var result = jax('#drop-result').val();
-                        var update = '<strong class="upload-success">uploaded</strong>.<br />';
+
+                    $.post(appPath + '/media/ajax/' + lid, {data : form, async : true, status : { "200" : function(response) {
+                        var update = ' <strong class="upload-success">uploaded.</strong>';
                         if ((response.text != undefined) && (response.text != '')) {
                             var resp = window.jax.parseResponse(response);
                             if (resp.error != undefined) {
-                                update = '<strong class="upload-error">' + resp.error + '</strong>.<br />';
+                                update = ' <strong class="upload-error">' + resp.error + '</strong>';
                             }
+                            jax('#file-upload-image-' + resp.id).remove();
+                            jax('#file-upload-' + resp.id).val(jax('#file-upload-' + resp.id).val() + update);
                         }
-                        result = result.substring(0, result.lastIndexOf('<img')) + ' ' + update;
-                        jax('#drop-result').val(result);
                     }}});
                 }
             } else {

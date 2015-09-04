@@ -308,17 +308,17 @@ class IndexController extends AbstractController
             $json['error'] = 'That library was not found.';
         } else {
             $settings = $library->getSettings();
-            //$folder   = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
 
             $upload = new Upload(
                 $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
             );
-            foreach ($_FILES as $file) {
+            foreach ($_FILES as $key => $file) {
                 if (!empty($file['name'])) {
+                    $json['id'] = substr($key, (strrpos($key, '_') + 1));
                     if (!$upload->test($file)) {
                         $json['error'] = $upload->getErrorMessage();
                     } else {
-                        $media = new Model\Media();
+                        $media      = new Model\Media();
                         $media->save($file, ['library_id' => $lid]);
                     }
                 }
