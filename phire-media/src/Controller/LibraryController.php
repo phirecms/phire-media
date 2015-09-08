@@ -74,7 +74,8 @@ class LibraryController extends AbstractController
                 $library = new Model\MediaLibrary();
                 $library->save($this->view->form->getFields());
                 $this->view->id = $library->id;
-                $this->redirect(BASE_PATH . APP_URI . '/media/libraries/edit/' . $library->id . '?saved=' . time());
+                $this->sess->setRequestValue('saved', true, 1);
+                $this->redirect(BASE_PATH . APP_URI . '/media/libraries/edit/' . $library->id);
             }
         }
 
@@ -124,7 +125,8 @@ class LibraryController extends AbstractController
                 $library = new Model\MediaLibrary();
                 $library->update($this->view->form->getFields());
                 $this->view->id = $library->id;
-                $this->redirect(BASE_PATH . APP_URI . '/media/libraries/edit/' . $library->id . '?saved=' . time());
+                $this->sess->setRequestValue('saved', true, 1);
+                $this->redirect(BASE_PATH . APP_URI . '/media/libraries/edit/' . $library->id);
             }
         }
 
@@ -178,9 +180,11 @@ class LibraryController extends AbstractController
             $library->process($this->request->getPost());
         }
         if (isset($_POST['process_media_libraries'])) {
-            $this->redirect(BASE_PATH . APP_URI . '/media?saved=' . time());
+            $this->sess->setRequestValue('saved', true, 1);
+            $this->redirect(BASE_PATH . APP_URI . '/media');
         } else {
-            $this->redirect(BASE_PATH . APP_URI . '/media/libraries?removed=' . time());
+            $this->sess->setRequestValue('removed', true, 1);
+            $this->redirect(BASE_PATH . APP_URI . '/media/libraries');
         }
     }
 
