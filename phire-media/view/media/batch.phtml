@@ -12,8 +12,10 @@
 <?php endif; ?>
         <nav><a href="<?=$phireUri . '/media/' . $lid; ?>">Back</a></nav>
     </nav>
+<?php if ($dragAndDrop): ?>
     <div id="drop-header-alt">
         Try the <a class="normal-link" href="<?=$phireUri . '/media/batch/' . $lid; ?>">drag-and-drop batch uploader</a>.
     </div>
+<?php endif; ?>
 <?=$form; ?>
 <?php include $phireFooter; ?>

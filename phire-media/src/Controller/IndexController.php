@@ -8,6 +8,7 @@ use Phire\Media\Table;
 use Phire\Controller\AbstractController;
 use Pop\File\Upload;
 use Pop\Paginator\Paginator;
+use Pop\Web\Browser;
 
 class IndexController extends AbstractController
 {
@@ -227,11 +228,15 @@ class IndexController extends AbstractController
             $this->redirect(BASE_PATH . APP_URI . '/media');
         }
 
+        $browser     = new Browser();
+        $dragAndDrop = !(($browser->isMsie()) && ($browser->getVersion() <= 9));
+
         if ((null !== $this->request->getQuery('basic')) && ($this->request->getQuery('basic'))) {
             $this->prepareView('media/batch.phtml');
-            $this->view->title = 'Media : ' . $library->name . ' : Batch Upload';
-            $this->view->lid = $lid;
-            $this->view->max = $library->getMaxFilesize();
+            $this->view->title       = 'Media : ' . $library->name . ' : Batch Upload';
+            $this->view->lid         = $lid;
+            $this->view->max         = $library->getMaxFilesize();
+            $this->view->dragAndDrop = $dragAndDrop;
 
             $fields = $this->application->config()['forms']['Phire\Media\Form\Batch'];
             $fields[0]['library_id']['value'] = $lid;
@@ -266,14 +271,16 @@ class IndexController extends AbstractController
                     $media->batch($_FILES, $this->view->form->getFields());
                     $this->view->id = $media->ids;
                     $this->sess->setRequestValue('saved', true, 1);
-                    $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid);
+                    $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid . '?basic=1');
                 }
             }
+        } else if (!$dragAndDrop) {
+            $this->redirect(BASE_PATH . APP_URI . '/media/batch/' . $lid . '?basic=1');
         } else {
             $this->prepareView('media/batch-ajax.phtml');
-            $this->view->title = 'Media : ' . $library->name . ' : Batch Upload';
-            $this->view->lid = $lid;
-            $this->view->max = $library->getMaxFilesize();
+            $this->view->title     = 'Media : ' . $library->name . ' : Batch Upload';
+            $this->view->lid       = $lid;
+            $this->view->max       = $library->getMaxFilesize();
         }
 
         $this->send();
