@@ -449,6 +449,8 @@ class IndexController extends AbstractController
             }
 
             $this->send();
+        } else {
+            $this->redirect(BASE_PATH . APP_URI . '/media');
         }
     }
 

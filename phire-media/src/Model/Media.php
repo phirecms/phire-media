@@ -201,7 +201,7 @@ class Media extends AbstractModel
             $class     = 'Pop\Image\\' .  $library->adapter;
             $formats   = array_keys($class::getFormats());
             $fileParts = pathinfo($fileName);
-            if (!empty($fileParts['extension']) && in_array($fileParts['extension'], $formats)) {
+            if (!empty($fileParts['extension']) && in_array(strtolower($fileParts['extension']), $formats)) {
                 $this->processImage($fileName, $library);
             }
         }
@@ -257,7 +257,7 @@ class Media extends AbstractModel
                     $class     = 'Pop\Image\\' .  $library->adapter;
                     $formats   = array_keys($class::getFormats());
                     $fileParts = pathinfo($fileName);
-                    if (!empty($fileParts['extension']) && in_array($fileParts['extension'], $formats)) {
+                    if (!empty($fileParts['extension']) && in_array(strtolower($fileParts['extension']), $formats)) {
                         $this->processImage($fileName, $library);
                     }
                 }
@@ -523,7 +523,7 @@ class Media extends AbstractModel
                     $class = 'Pop\Image\\' . $library->adapter;
                     $formats = array_keys($class::getFormats());
                     $fileParts = pathinfo($fileName);
-                    if (!empty($fileParts['extension']) && in_array($fileParts['extension'], $formats)) {
+                    if (!empty($fileParts['extension']) && in_array(strtolower($fileParts['extension']), $formats)) {
                         $this->processImage($fileName, $library);
                     }
                 }
