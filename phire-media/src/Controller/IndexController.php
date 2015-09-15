@@ -120,7 +120,7 @@ class IndexController extends AbstractController
                 $media = new Model\Media();
                 $media->save($_FILES['file'], $this->view->form->getFields());
                 $this->view->id = $media->id;
-                $this->sess->setRequestValue('saved', true, 1);
+                $this->sess->setRequestValue('saved', true);
                 $this->redirect(BASE_PATH . APP_URI . '/media/edit/' . $lid . '/'. $media->id);
             }
         }
@@ -205,7 +205,7 @@ class IndexController extends AbstractController
                 $media = new Model\Media();
                 $media->update((!empty($_FILES['file']) ? $_FILES['file'] : null), $this->view->form->getFields());
                 $this->view->id = $media->id;
-                $this->sess->setRequestValue('saved', true, 1);
+                $this->sess->setRequestValue('saved', true);
                 $this->redirect(BASE_PATH . APP_URI . '/media/edit/' . $lid . '/'. $media->id);
             }
         }
@@ -270,7 +270,7 @@ class IndexController extends AbstractController
                     $media = new Model\Media();
                     $media->batch($_FILES, $this->view->form->getFields());
                     $this->view->id = $media->ids;
-                    $this->sess->setRequestValue('saved', true, 1);
+                    $this->sess->setRequestValue('saved', true);
                     $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid . '?basic=1');
                 }
             }
@@ -298,7 +298,7 @@ class IndexController extends AbstractController
             $media = new Model\Media();
             $media->remove($this->request->getPost());
         }
-        $this->sess->setRequestValue('removed', true, 1);
+        $this->sess->setRequestValue('removed', true);
         $this->redirect(BASE_PATH . APP_URI . '/media/' . $lid);
     }
 
@@ -365,7 +365,7 @@ class IndexController extends AbstractController
                     if ($upload->test($_FILES['file'])) {
                         $media = new Model\Media();
                         $media->save($_FILES['file'], $this->request->getPost());
-                        $this->sess->setRequestValue('saved', true, 1);
+                        $this->sess->setRequestValue('saved', true);
                         $this->redirect(str_replace('&error=1', '', $_SERVER['REQUEST_URI']));
                     } else {
                         $this->redirect(str_replace('&error=1', '', $_SERVER['REQUEST_URI']) . '&error=1');
