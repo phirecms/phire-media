@@ -477,7 +477,8 @@ class Media extends AbstractModel
         $archive       = new Archive($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $batchFileName);
         $archive->extract($tmp);
 
-        if (($archive->getFilename() != $batchFileName) && file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $archive->getFilename())) {
+        if ((stripos($archive->getFilename(), '.tar') !== false) && ($archive->getFilename() != $batchFileName)
+            && file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $archive->getFilename())) {
             unlink($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $archive->getFilename());
         }
 
