@@ -319,6 +319,10 @@ class IndexController extends AbstractController
             $json['error'] = 'That library was not found.';
         } else {
             $settings = $library->getSettings();
+            $folder   = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
+            if (!file_exists($folder)) {
+                $library->createFolder($library->folder);
+            }
 
             $upload = new Upload(
                 $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
