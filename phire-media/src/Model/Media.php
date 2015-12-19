@@ -490,7 +490,11 @@ class Media extends AbstractModel
         $library->getById($fields['library_id']);
         $settings = $library->getSettings();
 
-        $dir    = new Dir($tmp, true, true, false);
+        $dir = new Dir($tmp, [
+            'absolute'  => true,
+            'recursive' => true,
+            'filesOnly' => true
+        ]);
         $upload = new Upload(
             $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
         );
