@@ -90,7 +90,7 @@ phire.loadEditor = function(editor, id) {
 
     if (phire.editorIds.length > 0) {
         for (var i = 0; i < phire.editorIds.length; i++) {
-            if (editor == 'ckeditor') {
+            if (editor.indexOf('ckeditor') != -1) {
                 if (CKEDITOR.instances['field_' + phire.editorIds[i].id] == undefined) {
                     CKEDITOR.replace(
                         'field_' + phire.editorIds[i].id,
@@ -102,7 +102,23 @@ phire.loadEditor = function(editor, id) {
                             filebrowserImageBrowseUrl     : sysPath + '/media/browser?editor=ckeditor&type=image',
                             filebrowserImageBrowseLinkUrl : sysPath + '/media/browser?editor=ckeditor&type=file',
                             filebrowserWindowWidth        : '960',
-                            filebrowserWindowHeight       : '720'
+                            filebrowserWindowHeight       : '720',
+                            toolbarGroups                 : [
+                                { name: 'clipboard',   groups: [ 'clipboard', 'undo' ] },
+                                { name: 'editing',     groups: [ 'find', 'selection', 'spellchecker' ] },
+                                { name: 'links' },
+                                { name: 'insert' },
+                                { name: 'forms' },
+                                { name: 'tools' },
+                                { name: 'document',    groups: [ 'mode', 'document', 'doctools' ] },
+                                { name: 'others' },
+                                '/',
+                                { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+                                { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ] },
+                                { name: 'styles' },
+                                { name: 'colors' },
+                                { name: 'about' }
+                            ]
                         }
                     );
                 }
@@ -111,7 +127,7 @@ phire.loadEditor = function(editor, id) {
                     console.log(jax('#field_' + eid).val());
                     CKEDITOR.instances['field_' + eid].setData(jax('#field_' + eid).val());
                 });
-            } else if (editor == 'tinymce') {
+            } else if (editor.indexOf('tinymce') != -1) {
                 if (tinymce.editors['field_' + phire.editorIds[i].id] == undefined) {
                     tinymce.init(
                         {
