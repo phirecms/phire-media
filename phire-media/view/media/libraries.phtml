@@ -14,10 +14,12 @@
             </tr>
 <?php $i = 1; ?>
 <?php foreach ($libraries as $library): ?>
+<?php if ($acl->isAllowed($user->role, 'media-library-' . $library->id, 'index')): ?>
             <tr>
-                <td><?php if ($acl->isAllowed($user->role, 'media-library-' . $library->id, 'index')): ?><a href="<?=$phireUri . '/media/' . $library->id; ?>"><?=$library->name; ?></a><?php else: echo $library->name; ?><?php endif; ?></td>
+                <td><a href="<?=$phireUri . '/media/' . $library->id; ?>"><?=$library->name; ?></td>
                 <td class="text-center"><?php if (($acl->isAllowed($user->role, 'media-libraries', 'process') && ($acl->isAllowed($user->role, 'media-library-' . $library->id, 'process')))): ?><input type="checkbox" name="process_media_libraries[]" id="process_media_libraries<?=$i++; ?>" value="<?=$library->id; ?>" /><?php else: ?>&nbsp;<?php endif; ?></td>
             </tr>
+<?php endif; ?>
 <?php endforeach; ?>
         </table>
 <?php if ($acl->isAllowed($user->role, 'media-libraries', 'process')): ?>
