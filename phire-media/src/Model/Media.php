@@ -74,6 +74,36 @@ class Media extends AbstractModel
     }
 
     /**
+     * Get all media by library ID
+     *
+     * @param  int $libraryId
+     * @return array
+     */
+    public function getAllByLibraryId($libraryId)
+    {
+        $library = new MediaLibrary();
+        $library->getById($libraryId);
+
+        $mediaAry =  Table\Media::findBy(['library_id' => $libraryId], ['order' => 'order, id ASC'])->rows();
+        $ary      = [];
+
+        foreach ($mediaAry as $media) {
+            $m = (array)$media;
+            $icon = $this->getFileIcon($m['file'], $library);
+
+            $m['filesize']       = $this->formatFileSize($m['size']);
+            $m['library_folder'] = $library->folder;
+            $m['icon']           = $icon['image'];
+            $m['icon_width']     = $icon['width'];
+            $m['icon_height']    = $icon['height'];
+
+            $ary[] = $m;
+        }
+
+        return $ary;
+    }
+
+    /**
      * Get media by ID
      *
      * @param  int $id

@@ -2,8 +2,10 @@
 
 namespace Phire\Media\Event;
 
+use Phire\Media\Model;
 use Phire\Media\Table;
 use Pop\Application;
+use Phire\Controller\AbstractController;
 
 class Media
 {
@@ -57,6 +59,70 @@ class Media
         if (null !== $models) {
             $application->module('phire-media')->mergeConfig(['models' => $models]);
         }
+    }
+
+    /**
+     * Init media model object
+     *
+     * @param  AbstractController $controller
+     * @param  Application        $application
+     * @return void
+     */
+    public static function init(AbstractController $controller, Application $application)
+    {
+        if ((!$_POST) && ($controller->hasView()) && ($controller->view()->isFile()) &&
+            (($controller instanceof \Phire\Content\Controller\IndexController) ||
+                ($controller instanceof \Phire\Categories\Controller\IndexController))) {
+            $controller->view()->phire->media = new Model\Media();
+        }
+    }
+
+    /**
+     * Parse any media group placeholders
+     *
+     * @param  AbstractController $controller
+     * @param  Application        $application
+     * @return void
+     */
+    public static function parseMedia(AbstractController $controller, Application $application)
+    {
+        if (($controller->hasView()) &&
+            (($controller instanceof \Phire\Categories\Controller\IndexController) ||
+                ($controller instanceof \Phire\Content\Controller\IndexController))
+        ) {
+            $body = $controller->response()->getBody();
+            $ids  = self::parseLibraryIds($body);
+            if (count($ids) > 0) {
+                $media = new Model\Media();
+                foreach ($ids as $id) {
+                    $key = 'media_' . $id;
+                    $controller->view()->{$key} = $media->getAllByLibraryId($id);
+                }
+                $controller->response()->setBody($controller->view()->render());
+            }
+        }
+    }
+
+    /**
+     * Parse library IDs from template
+     *
+     * @param  string $template
+     * @return array
+     */
+    protected static function parseLibraryIds($template)
+    {
+        $ids   = [];
+        $media = [];
+
+        preg_match_all('/\[\{media_.*\}\]/', $template, $media);
+
+        if (isset($media[0]) && isset($media[0][0])) {
+            foreach ($media[0] as $m) {
+                $ids[] = str_replace('}]', '', substr($m, (strpos($m, '_') + 1)));
+            }
+        }
+
+        return $ids;
     }
 
 }

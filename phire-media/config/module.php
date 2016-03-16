@@ -41,7 +41,17 @@ return [
                 'name'     => 'app.route.pre',
                 'action'   => 'Phire\Media\Event\Media::bootstrap',
                 'priority' => 1000
-            ]
+            ],
+            [
+                'name'     => 'app.send.pre',
+                'action'   => 'Phire\Media\Event\Media::init',
+                'priority' => 1000
+            ],
+            [
+                'name'     => 'app.send.post',
+                'action'   => 'Phire\Media\Event\Media::parseMedia',
+                'priority' => 1000
+            ],
         ]
     ]
 ];
