@@ -48,7 +48,7 @@ return [
                 'priority' => 1000
             ],
             [
-                'name'     => 'app.send.post',
+                'name'     => 'app.send.pre',
                 'action'   => 'Phire\Media\Event\Media::parseMedia',
                 'priority' => 1000
             ],

@@ -90,6 +90,20 @@ class Media
             (($controller instanceof \Phire\Categories\Controller\IndexController) ||
                 ($controller instanceof \Phire\Content\Controller\IndexController))
         ) {
+            $data = $controller->view()->getData();
+            foreach ($data as $key => $value) {
+                if (is_string($value)) {
+                    $subIds = self::parseLibraryIds($value);
+                    if (count($subIds) > 0) {
+                        $content = new Model\Media();
+                        foreach ($subIds as $sid) {
+                            $view = new \Pop\View\View($value, ['media_' . $sid => $content->getAllByLibraryId($sid)]);
+                            $controller->view()->{$key} = $view->render();
+                        }
+                    }
+                }
+            }
+
             $body = $controller->response()->getBody();
             $ids  = self::parseLibraryIds($body);
             if (count($ids) > 0) {
@@ -98,7 +112,6 @@ class Media
                     $key = 'media_' . $id;
                     $controller->view()->{$key} = $media->getAllByLibraryId($id);
                 }
-                $controller->response()->setBody($controller->view()->render());
             }
         }
     }
