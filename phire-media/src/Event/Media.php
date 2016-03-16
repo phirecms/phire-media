@@ -95,9 +95,9 @@ class Media
                 if (is_string($value)) {
                     $subIds = self::parseLibraryIds($value);
                     if (count($subIds) > 0) {
-                        $content = new Model\Media();
+                        $media = new Model\Media();
                         foreach ($subIds as $sid) {
-                            $view = new \Pop\View\View($value, ['media_' . $sid => $content->getAllByLibraryId($sid)]);
+                            $view = new \Pop\View\View($value, ['media_' . $sid => $media->getAllByLibraryId($sid)]);
                             $controller->view()->{$key} = $view->render();
                         }
                     }

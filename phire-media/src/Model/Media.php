@@ -88,7 +88,12 @@ class Media extends AbstractModel
         $ary      = [];
 
         foreach ($mediaAry as $media) {
-            $m = (array)$media;
+            if (class_exists('Phire\Fields\Model\FieldValue')) {
+                $med    = \Phire\Fields\Model\FieldValue::getModelObject('Phire\Media\Model\Media', [$media->id]);
+                $m = $med->toArray();
+            } else {
+                $m = (array)$media;
+            }
             $icon = $this->getFileIcon($m['file'], $library);
 
             $m['filesize']       = $this->formatFileSize($m['size']);
