@@ -176,6 +176,37 @@
     line-height: 2.0em;
 }
 
+div#drop-result.drop-categories {
+    float: right;
+    width: calc(100% - 270px);
+}
+
+#batch-categories {
+    margin: 10px 5px 10px 10px;
+    padding: 10px 5px 10px 10px;
+    float: right;
+    width: 200px;
+    min-height: 200px;
+    font-size: 1.0em;
+    line-height: 1.0em;
+    border-left: 1px dotted #aaa;
+}
+
+#batch-categories > h4 {
+    margin: 0 0 3px 0;
+    padding: 0 0 6px 0;
+    font-weight: normal;
+    border-bottom: 1px dotted #aaa;
+}
+
+#batch-categories input[type=text].category-order-value {
+    display: none;
+}
+
+#batch-categories span.category-checkbox-value {
+    border: none;
+}
+
 #browser-container {
     position: relative;
     min-height: 100%;

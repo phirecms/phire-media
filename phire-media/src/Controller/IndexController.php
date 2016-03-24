@@ -278,9 +278,23 @@ class IndexController extends AbstractController
             $this->redirect(BASE_PATH . APP_URI . '/media/batch/' . $lid . '?basic=1');
         } else {
             $this->prepareView('media/batch-ajax.phtml');
-            $this->view->title     = 'Media : ' . $library->name . ' : Batch Upload';
-            $this->view->lid       = $lid;
-            $this->view->max       = $library->getMaxFilesize();
+            $this->view->title      = 'Media : ' . $library->name . ' : Batch Upload';
+            $this->view->lid        = $lid;
+            $this->view->max        = $library->getMaxFilesize();
+            $this->view->categories = null;
+
+            if (class_exists('Phire\Categories\Model\Category')) {
+                $config = $this->application->module('phire-categories');
+                $cat    = new \Phire\Categories\Model\Category([], $config);
+                $cat->getAll();
+
+                if (count($cat->getFlatMap()) > 0) {
+                    $categoryValues = $cat->getCategoryValues();
+                    $categories = new \Pop\Form\Element\CheckboxSet('categories', $categoryValues);
+                    $categories->setLabel('Categories');
+                    $this->view->categories = $categories;
+                }
+            }
         }
 
         $this->send();
@@ -313,7 +327,12 @@ class IndexController extends AbstractController
         $library = new Model\MediaLibrary();
         $library->getById($lid);
 
-        $json = [];
+        $json       = [];
+        $categories = [];
+
+        if (class_exists('Phire\Categories\Model\Category') && isset($_POST['categories'])) {
+            $categories = explode(',', $_POST['categories']);
+        }
 
         if (!isset($library->id)) {
             $json['error'] = 'That library was not found.';
@@ -335,6 +354,18 @@ class IndexController extends AbstractController
                     } else {
                         $media = new Model\Media();
                         $media->save($file, ['library_id' => $lid]);
+
+                        if (count($categories) > 0) {
+                            foreach ($categories as $category) {
+                                $c2c = new \Phire\Categories\Table\ContentToCategories([
+                                    'content_id'  => $media->id,
+                                    'category_id' => (int)$category,
+                                    'type'        => 'media',
+                                    'order'       => 0
+                                ]);
+                                $c2c->save();
+                            }
+                        }
                     }
                 }
             }

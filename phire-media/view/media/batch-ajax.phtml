@@ -18,5 +18,12 @@
     <div id="drop-zone" class="drop-zone-off" data-lid="<?=$lid; ?>">
         Drag and drop files here.
     </div>
-    <div id="drop-result"></div>
+<?php if (isset($categories) && (null !== $categories)): ?>
+    <div id="batch-categories">
+        <h4><?=$categories->getLabel(); ?></h4>
+        <?=$categories; ?>
+    </div>
+<?php endif; ?>
+    <div id="drop-result"<?=(isset($categories) && (null !== $categories)) ? ' class="drop-categories"' : null;?>>
+    </div>
 <?php include $phireFooter; ?>

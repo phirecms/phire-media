@@ -258,6 +258,16 @@ jax(document).ready(function(){
                         files[i].name + ' <img id="file-upload-image-' + cur + '" src="' + contentPath + '/assets/phire-media/img/uploading.gif" /></div>';
 
                     form.append("file_" + cur, files[i]);
+
+                    var categories = jax('input[type=checkbox]');
+                    var categoriesChecked = [];
+                    for (var c = 0; c < categories.length; c++) {
+                        if (categories[c].checked) {
+                            categoriesChecked.push(categories[c].value);
+                        }
+                    }
+
+                    form.append('categories', categoriesChecked);
                     jax('#drop-result').val(result);
 
                     $.post(appPath + '/media/ajax/' + lid, {data : form, async : true, status : { "200" : function(response) {
