@@ -480,6 +480,7 @@ class IndexController extends AbstractController
 
                 $this->view->title     = 'Media';
                 $this->view->pages     = $pages;
+                $this->view->lid       = $lid;
                 $this->view->libraries = $libraries;
             }
 

@@ -31,9 +31,19 @@
     <link rel="shortcut icon" href="<?=$contentPath; ?>/assets/phire/img/phire-icon.png" type="image/png" />
 
 <?php
-    $click = (strpos($_GET['editor'], 'ckeditor') !== false) ?
-        'window.opener.CKEDITOR.tools.callFunction(funcNum, this.href.substring(window.location.origin.length)); window.close(); return false;' :
-        'top.tinymce.activeEditor.windowManager.getParams().oninsert(this.href.substring(window.location.origin.length)); top.tinymce.activeEditor.windowManager.close(); return false;';
+    switch ($_GET['editor']):
+        case 'ckeditor':
+            $click = 'window.opener.CKEDITOR.tools.callFunction(funcNum, this.href.substring(window.location.origin.length)); window.close(); return false;';
+            break;
+        case 'tinymce':
+            $click = 'top.tinymce.activeEditor.windowManager.getParams().oninsert(this.href.substring(window.location.origin.length)); top.tinymce.activeEditor.windowManager.close(); return false;';
+            break;
+        case 'phire-image':
+            $click = 'window.opener.phire.imageEditor.load(this.href.substring(window.location.origin.length), ' . $lid . '); return false;';
+            break;
+        default:
+            $click = 'return false;';
+    endswitch;
 ?>
 <?php if (strpos($_GET['editor'], 'ckeditor') !== false): ?>
     <script type="text/javascript">
