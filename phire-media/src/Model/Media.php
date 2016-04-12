@@ -219,6 +219,15 @@ class Media extends AbstractModel
             $title = $fields['title'];
         }
 
+        if (null !== $library->adapter) {
+            $class     = 'Pop\Image\\' .  $library->adapter;
+            $formats   = array_keys($class::getFormats());
+            $fileParts = pathinfo($fileName);
+            if (!empty($fileParts['extension']) && in_array(strtolower($fileParts['extension']), $formats)) {
+                $this->processImage($fileName, $library);
+            }
+        }
+
         $media = new Table\Media([
             'library_id' => $fields['library_id'],
             'title'      => $title,
@@ -231,15 +240,6 @@ class Media extends AbstractModel
             'order'      => (isset($fields['order'])) ? (int)$fields['order'] : 0
         ]);
         $media->save();
-
-        if (null !== $library->adapter) {
-            $class     = 'Pop\Image\\' .  $library->adapter;
-            $formats   = array_keys($class::getFormats());
-            $fileParts = pathinfo($fileName);
-            if (!empty($fileParts['extension']) && in_array(strtolower($fileParts['extension']), $formats)) {
-                $this->processImage($fileName, $library);
-            }
-        }
 
         $this->data = array_merge($this->data, $media->getColumns());
     }
@@ -306,6 +306,10 @@ class Media extends AbstractModel
                 $title = $fields['title'];
             }
 
+            if (isset($fields['reprocess']) && isset($fields['reprocess'][0])) {
+                $this->processImage($fileName, $library);
+            }
+
             $media->library_id = $fields['library_id'];
             $media->title      = $title;
             $media->file       = $fileName;
@@ -317,10 +321,6 @@ class Media extends AbstractModel
             $media->order      = (int)$fields['order'];
 
             $media->save();
-
-            if (isset($fields['reprocess']) && isset($fields['reprocess'][0])) {
-                $this->processImage($fileName, $library);
-            }
 
             $this->data = array_merge($this->data, $media->getColumns());
         }
@@ -391,6 +391,34 @@ class Media extends AbstractModel
     {
         $class  = 'Pop\Image\\' . $library->adapter;
         $folder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder;
+
+        if (function_exists('exif_read_data')) {
+            $img = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
+                $library->folder . DIRECTORY_SEPARATOR . $fileName;
+            $exif = exif_read_data($img);
+
+            if (isset($exif['Orientation'])) {
+                switch ($exif['Orientation']) {
+                    case 3:
+                        $image = new $class($folder . DIRECTORY_SEPARATOR . $fileName);
+                        $image->setQuality(95);
+                        $image->rotate(180);
+                        $image->save();
+                        break;
+                    case 6:$image = new $class($folder . DIRECTORY_SEPARATOR . $fileName);
+                        $image->setQuality(95);
+                        $image->rotate(-90);
+                        $image->save();
+                        break;
+                    case 8:$image = new $class($folder . DIRECTORY_SEPARATOR . $fileName);
+                        $image->setQuality(95);
+                        $image->rotate(90);
+                        $image->save();
+                        break;
+                }
+            }
+        }
+
         foreach ($library->actions as $size => $action) {
             $sizeFolder = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
                 $library->folder . DIRECTORY_SEPARATOR . $size;
@@ -408,6 +436,86 @@ class Media extends AbstractModel
             $image->setQuality($action['quality']);
             $image->save($sizeFolder . DIRECTORY_SEPARATOR . $fileName);
         }
+    }
+
+    /**
+     * Process batch archive file
+     *
+     * @param  string $file
+     * @param  array  $fields
+     * @return void
+     */
+    public function processBatch($file, array $fields)
+    {
+        $tmp = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp';
+
+        mkdir($tmp);
+        chmod($tmp, 0777);
+
+        $batchFileName = (new Upload($tmp))->upload($file);
+        $archive       = new Archive($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $batchFileName);
+        $archive->extract($tmp);
+
+        if ((stripos($archive->getFilename(), '.tar') !== false) && ($archive->getFilename() != $batchFileName)
+            && file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $archive->getFilename())) {
+            unlink($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $archive->getFilename());
+        }
+
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $batchFileName)) {
+            unlink($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $batchFileName);
+        }
+
+        $library = new MediaLibrary();
+        $library->getById($fields['library_id']);
+        $settings = $library->getSettings();
+
+        $dir = new Dir($tmp, [
+            'absolute'  => true,
+            'recursive' => true,
+            'filesOnly' => true
+        ]);
+        $upload = new Upload(
+            $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
+        );
+        foreach ($dir->getFiles() as $file) {
+            $basename = basename($file);
+            $testFile = [
+                'name' => $basename,
+                'size' => filesize($file),
+                'error' => 0
+            ];
+            if ($upload->test($testFile)) {
+                $fileName = $upload->checkFilename($basename);
+                copy($file, $settings['folder'] . '/' . $fileName);
+                $title = ucwords(str_replace(['_', '-'], [' ', ' '], substr($fileName, 0, strrpos($fileName, '.'))));
+
+                if (null !== $library->adapter) {
+                    $class = 'Pop\Image\\' . $library->adapter;
+                    $formats = array_keys($class::getFormats());
+                    $fileParts = pathinfo($fileName);
+                    if (!empty($fileParts['extension']) && in_array(strtolower($fileParts['extension']), $formats)) {
+                        $this->processImage($fileName, $library);
+                    }
+                }
+
+                $media = new Table\Media([
+                    'library_id' => $fields['library_id'],
+                    'title'      => $title,
+                    'file'       => $fileName,
+                    'size'       => filesize(
+                        $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
+                        $library->folder . DIRECTORY_SEPARATOR . $fileName
+                    ),
+                    'uploaded'   => date('Y-m-d H:i:s'),
+                    'order'      => 0
+                ]);
+                $media->save();
+
+                $this->data['ids'][] = $media->id;
+            }
+        }
+
+        $dir->emptyDir(true);
     }
 
     /**
@@ -492,85 +600,6 @@ class Media extends AbstractModel
         }
 
         return $icon;
-    }
-
-    /**
-     * Process batch archive file
-     *
-     * @param  string $file
-     * @param  array  $fields
-     * @return void
-     */
-    public function processBatch($file, array $fields)
-    {
-        $tmp = $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp';
-
-        mkdir($tmp);
-        chmod($tmp, 0777);
-
-        $batchFileName = (new Upload($tmp))->upload($file);
-        $archive       = new Archive($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $batchFileName);
-        $archive->extract($tmp);
-
-        if ((stripos($archive->getFilename(), '.tar') !== false) && ($archive->getFilename() != $batchFileName)
-            && file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $archive->getFilename())) {
-            unlink($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $archive->getFilename());
-        }
-
-        if (file_exists($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $batchFileName)) {
-            unlink($_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . '/_tmp/' . $batchFileName);
-        }
-
-        $library = new MediaLibrary();
-        $library->getById($fields['library_id']);
-        $settings = $library->getSettings();
-
-        $dir = new Dir($tmp, [
-            'absolute'  => true,
-            'recursive' => true,
-            'filesOnly' => true
-        ]);
-        $upload = new Upload(
-            $settings['folder'], $settings['max_filesize'], $settings['disallowed_types'], $settings['allowed_types']
-        );
-        foreach ($dir->getFiles() as $file) {
-            $basename = basename($file);
-            $testFile = [
-                'name' => $basename,
-                'size' => filesize($file),
-                'error' => 0
-            ];
-            if ($upload->test($testFile)) {
-                $fileName = $upload->checkFilename($basename);
-                copy($file, $settings['folder'] . '/' . $fileName);
-                $title = ucwords(str_replace(['_', '-'], [' ', ' '], substr($fileName, 0, strrpos($fileName, '.'))));
-                $media = new Table\Media([
-                    'library_id' => $fields['library_id'],
-                    'title'      => $title,
-                    'file'       => $fileName,
-                    'size'       => filesize(
-                        $_SERVER['DOCUMENT_ROOT'] . BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR .
-                        $library->folder . DIRECTORY_SEPARATOR . $fileName
-                    ),
-                    'uploaded'   => date('Y-m-d H:i:s'),
-                    'order'      => 0
-                ]);
-                $media->save();
-
-                $this->data['ids'][] = $media->id;
-
-                if (null !== $library->adapter) {
-                    $class = 'Pop\Image\\' . $library->adapter;
-                    $formats = array_keys($class::getFormats());
-                    $fileParts = pathinfo($fileName);
-                    if (!empty($fileParts['extension']) && in_array(strtolower($fileParts['extension']), $formats)) {
-                        $this->processImage($fileName, $library);
-                    }
-                }
-            }
-        }
-
-        $dir->emptyDir(true);
     }
 
 }
