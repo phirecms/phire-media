@@ -560,8 +560,8 @@ class Media extends AbstractModel
                 $fileSize = filesize($folder . DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $fileName);
                 if ((null === $thumbSize) || ($fileSize < $thumbSize)) {
                     $thumbSize     = $fileSize;
-                    $icon['image'] = BASE_PATH . CONTENT_PATH . DIRECTORY_SEPARATOR . $library->folder .
-                        DIRECTORY_SEPARATOR . $size . DIRECTORY_SEPARATOR . $fileName;
+                    $icon['image'] = BASE_PATH . CONTENT_PATH . '/' . $library->folder .
+                        '/' . $size . '/' . $fileName;
                 }
             }
         }
