@@ -50,13 +50,34 @@ class IndexController extends AbstractController
             }
 
             if ($this->services['acl']->isAllowed($this->sess->user->role, 'media-library-' . $library->id, 'index')) {
-                if ($media->hasPages($this->config->pagination)) {
-                    $limit = $this->config->pagination;
-                    $pages = new Paginator($media->getCount(), $limit);
-                    $pages->useInput(true);
+
+                if (null !== $this->request->getQuery('title')) {
+                    $mediaFiles = $media->getAll(
+                        null, $this->request->getQuery('page'), $this->request->getQuery('sort'), $this->request->getQuery('title')
+                    );
+                    if (count($mediaFiles) > $this->config->pagination) {
+                        $page  = $this->request->getQuery('page');
+                        $limit = $this->config->pagination;
+                        $pages = new Paginator(count($mediaFiles), $limit);
+                        $pages->useInput(true);
+                        $offset = ((null !== $page) && ((int)$page > 1)) ?
+                            ($page * $limit) - $limit : 0;
+                        $mediaFiles = array_slice($mediaFiles, $offset, $limit, true);
+                    } else {
+                        $pages = null;
+                    }
                 } else {
-                    $limit = null;
-                    $pages = null;
+                    if ($media->hasPages($this->config->pagination)) {
+                        $limit = $this->config->pagination;
+                        $pages = new Paginator($media->getCount(), $limit);
+                        $pages->useInput(true);
+                    } else {
+                        $limit = null;
+                        $pages = null;
+                    }
+                    $mediaFiles = $media->getAll(
+                        $limit, $this->request->getQuery('page'), $this->request->getQuery('sort')
+                    );
                 }
 
                 $this->view->title       = 'Media : ' . $library->name;
@@ -64,9 +85,7 @@ class IndexController extends AbstractController
                 $this->view->lid         = $lid;
                 $this->view->folder      = $library->folder;
                 $this->view->searchValue = htmlentities(strip_tags($this->request->getQuery('title')), ENT_QUOTES, 'UTF-8');
-                $this->view->media       = $media->getAll(
-                    $limit, $this->request->getQuery('page'), $this->request->getQuery('sort'), $this->request->getQuery('title')
-                );
+                $this->view->media       = $mediaFiles;
             } else {
                 $this->redirect(BASE_PATH . APP_URI . '/media');
             }
