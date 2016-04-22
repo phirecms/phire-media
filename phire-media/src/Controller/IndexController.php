@@ -50,7 +50,6 @@ class IndexController extends AbstractController
             }
 
             if ($this->services['acl']->isAllowed($this->sess->user->role, 'media-library-' . $library->id, 'index')) {
-
                 if (null !== $this->request->getQuery('title')) {
                     $mediaFiles = $media->getAll(
                         null, $this->request->getQuery('page'), $this->request->getQuery('sort'), $this->request->getQuery('title')
@@ -67,9 +66,9 @@ class IndexController extends AbstractController
                         $pages = null;
                     }
                 } else {
-                    if ($media->hasPages($this->config->pagination)) {
+                    if ($media->hasPages($this->config->pagination, $lid)) {
                         $limit = $this->config->pagination;
-                        $pages = new Paginator($media->getCount(), $limit);
+                        $pages = new Paginator($media->getCount($lid), $limit);
                         $pages->useInput(true);
                     } else {
                         $limit = null;

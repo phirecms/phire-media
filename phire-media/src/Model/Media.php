@@ -363,21 +363,31 @@ class Media extends AbstractModel
      * Determine if list of libraries has pages
      *
      * @param  int $limit
+     * @param  int $libraryId
      * @return boolean
      */
-    public function hasPages($limit)
+    public function hasPages($limit, $libraryId = null)
     {
-        return (Table\Media::findAll()->count() > $limit);
+        if (null !== $libraryId) {
+            return (Table\Media::findBy(['library_id' => $libraryId])->count() > $limit);
+        } else {
+            return (Table\Media::findAll()->count() > $limit);
+        }
     }
 
     /**
      * Get count of libraries
      *
+     * @param  int $libraryId
      * @return int
      */
-    public function getCount()
+    public function getCount($libraryId = null)
     {
-        return Table\Media::findAll()->count();
+        if (null !== $libraryId) {
+            return Table\Media::findBy(['library_id' => $libraryId])->count();
+        } else {
+            return Table\Media::findAll()->count();
+        }
     }
 
     /**
