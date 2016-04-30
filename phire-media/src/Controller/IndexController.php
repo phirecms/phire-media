@@ -375,13 +375,14 @@ class IndexController extends AbstractController
 
                         if (count($categories) > 0) {
                             foreach ($categories as $category) {
-                                $c2c = new \Phire\Categories\Table\ContentToCategories([
-                                    'content_id'  => $media->id,
+
+                                $catItem = new \Phire\Categories\Table\CategoryItems([
                                     'category_id' => (int)$category,
-                                    'type'        => 'media',
+                                    'content_id'  => null,
+                                    'media_id'    => $media->id,
                                     'order'       => 0
                                 ]);
-                                $c2c->save();
+                                $catItem->save();
                             }
                         }
                     }
