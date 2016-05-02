@@ -22,11 +22,40 @@ class Media extends AbstractModel
      */
     public function getAll($limit = null, $page = null, $sort = null, $title = null)
     {
-        $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : 'id DESC';
+        $order = (null !== $sort) ? $this->getSortOrder($sort, $page) : DB_PREFIX . 'media.id DESC';
 
-        if (null !== $title) {
-            $sql = Table\Media::sql();
-            $sql->select()->where('title LIKE :title');
+        if ((null !== $title) || isset($_GET['category_id'])) {
+            $sql    = Table\Media::sql();
+            $params = [];
+
+            if (isset($_GET['category_id']) && ($_GET['category_id'] > 0)) {
+                $sql->select([
+                    'id'             => DB_PREFIX . 'media.id',
+                    'library_id'     => DB_PREFIX . 'media.library_id',
+                    'title'          => DB_PREFIX . 'media.title',
+                    'file'           => DB_PREFIX . 'media.file',
+                    'size'           => DB_PREFIX . 'media.size',
+                    'uploaded'       => DB_PREFIX . 'media.uploaded',
+                    'order'          => DB_PREFIX . 'media.order',
+                    'media_id'       => DB_PREFIX . 'category_items.media_id',
+                    'category_id'    => DB_PREFIX . 'categories.id',
+                    'category_title' => DB_PREFIX . 'categories.title'
+                ]);
+            } else {
+                $sql->select();
+            }
+
+            if (!empty($title)) {
+                $sql->select()->where(DB_PREFIX . 'media.title LIKE :title');
+                $params['title'] = '%' . $title . '%';
+            }
+
+            if (isset($_GET['category_id']) && ($_GET['category_id'] > 0)) {
+                $sql->select()->join(DB_PREFIX . 'category_items', [DB_PREFIX . 'category_items.media_id' => DB_PREFIX . 'media.id']);
+                $sql->select()->join(DB_PREFIX . 'categories', [DB_PREFIX . 'category_items.category_id' => DB_PREFIX . 'categories.id']);
+                $sql->select()->where('category_id = :category_id');
+                $params['category_id'] = (int)$_GET['category_id'];
+            }
 
             $by = explode(' ', $order);
             $sql->select()->orderBy($by[0], $by[1]);
@@ -40,7 +69,9 @@ class Media extends AbstractModel
                 $sql->select()->limit($limit);
             }
 
-            $rows = Table\Media::execute((string)$sql, ['title' => '%' . $title . '%'])->rows();
+            //echo $sql;
+            //exit();
+            $rows = Table\Media::execute((string)$sql, $params)->rows();
         } else {
             if (null !== $limit) {
                 $page = ((null !== $page) && ((int)$page > 1)) ?
