@@ -296,10 +296,10 @@ class IndexController extends AbstractController
             $this->redirect(BASE_PATH . APP_URI . '/media/batch/' . $lid . '?basic=1');
         } else {
             $this->prepareView('media/batch-ajax.phtml');
-            $this->view->title      = 'Media : ' . $library->name . ' : Batch Upload';
-            $this->view->lid        = $lid;
-            $this->view->max        = $library->getMaxFilesize();
-            $this->view->categories = null;
+            $this->view->title              = 'Media : ' . $library->name . ' : Batch Upload';
+            $this->view->lid                = $lid;
+            $this->view->max                = $library->getMaxFilesize();
+            $this->view->categoriesForBatch = null;
 
             if (class_exists('Phire\Categories\Model\Category')) {
                 $config = $this->application->module('phire-categories');
@@ -310,7 +310,7 @@ class IndexController extends AbstractController
                     $categoryValues = $cat->getCategoryValues();
                     $categories = new \Pop\Form\Element\CheckboxSet('categories', $categoryValues);
                     $categories->setLabel('Categories');
-                    $this->view->categories = $categories;
+                    $this->view->categoriesForBatch = $categories;
                 }
             }
         }

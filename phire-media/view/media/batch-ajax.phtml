@@ -18,10 +18,10 @@
     <div id="drop-zone" class="drop-zone-off" data-lid="<?=$lid; ?>">
         Drag and drop files here.
     </div>
-<?php if (isset($categories) && (null !== $categories)): ?>
+<?php if (isset($categoriesForBatch) && (null !== $categoriesForBatch)): ?>
     <div id="batch-categories">
-        <h4><?=$categories->getLabel(); ?></h4>
-        <?=$categories; ?>
+        <h4><?=$categoriesForBatch->getLabel(); ?></h4>
+        <?=$categoriesForBatch; ?>
     </div>
 <?php endif; ?>
     <div id="drop-result"<?=(isset($categories) && (null !== $categories)) ? ' class="drop-categories"' : null;?>>
