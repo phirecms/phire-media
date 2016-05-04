@@ -2,7 +2,7 @@
 <?php if ((count($media) > 0) && $acl->isAllowed($user->role, 'media', 'search')): ?>
     <form id="asset-search-form" action="<?=$phireUri . '/media/' . $lid; ?>" method="get">
         <div><input tabindex="3" type="submit" id="submit" value="Search" /><input type="hidden" name="library_id" value="<?=$lid; ?>" /></div>
-<?php if (isset($categories)): ?>
+<?php if (isset($categories) && (count($categories) > 0)): ?>
         <div>
             <select name="category_id" id="category_id">
                 <option value="0">----</option>
