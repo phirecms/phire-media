@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * phire-media routes
+ */
 return [
     APP_URI => [
         '/media[/:lid]' => [

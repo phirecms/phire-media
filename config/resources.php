@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * phire-media resources
+ */
 return [
     'media' => [
         'index',

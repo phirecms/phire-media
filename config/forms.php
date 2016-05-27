@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * phire-media form configuration
+ */
 return [
     'Phire\Media\Form\Media' => [
         [
