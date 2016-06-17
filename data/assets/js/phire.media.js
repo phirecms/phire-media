@@ -124,7 +124,6 @@ phire.loadEditor = function(editor, id) {
                 }
                 var eid = phire.editorIds[i].id;
                 jax('#field_' + eid).keyup(function(){
-                    console.log(jax('#field_' + eid).val());
                     CKEDITOR.instances['field_' + eid].setData(jax('#field_' + eid).val());
                 });
             } else if (editor.indexOf('tinymce') != -1) {
