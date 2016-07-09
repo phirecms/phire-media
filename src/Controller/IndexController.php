@@ -103,6 +103,7 @@ class IndexController extends AbstractController
                 $this->view->title       = 'Media : ' . $library->name;
                 $this->view->pages       = $pages;
                 $this->view->lid         = $lid;
+                $this->view->queryString = $this->getQueryString('sort');
                 $this->view->folder      = $library->folder;
                 $this->view->searchValue = htmlentities(strip_tags($this->request->getQuery('title')), ENT_QUOTES, 'UTF-8');
                 $this->view->media       = $mediaFiles;

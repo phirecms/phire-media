@@ -34,11 +34,11 @@
 <?php endif; ?>
         <table class="data-table" cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <th><a href="<?=$phireUri . '/media/' . $lid . '?sort=id';?>">#</a></th>
-                <th><a href="<?=$phireUri . '/media/' . $lid . '?sort=title';?>">Title</a></th>
-                <th><a href="<?=$phireUri . '/media/' . $lid . '?sort=file';?>">Filename</a></th>
-                <th class="text-center"><a href="<?=$phireUri . '/media/' . $lid . '?sort=uploaded';?>">Uploaded</a></th>
-                <th class="text-center"><a href="<?=$phireUri . '/media/' . $lid . '?sort=size';?>">Size</a></th>
+                <th><a href="<?=$phireUri . '/media/' . $lid . '?sort=id' . (($queryString != '') ? '&' . $queryString : '');?>">#</a></th>
+                <th><a href="<?=$phireUri . '/media/' . $lid . '?sort=title' . (($queryString != '') ? '&' . $queryString : '');?>">Title</a></th>
+                <th><a href="<?=$phireUri . '/media/' . $lid . '?sort=file' . (($queryString != '') ? '&' . $queryString : '');?>">Filename</a></th>
+                <th class="text-center"><a href="<?=$phireUri . '/media/' . $lid . '?sort=uploaded' . (($queryString != '') ? '&' . $queryString : '');?>">Uploaded</a></th>
+                <th class="text-center"><a href="<?=$phireUri . '/media/' . $lid . '?sort=size' . (($queryString != '') ? '&' . $queryString : '');?>">Size</a></th>
 <?php if (isset($_GET['category_id'])): ?>
                 <th>Category</th>
 <?php endif; ?>
